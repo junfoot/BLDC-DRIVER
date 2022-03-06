@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "tle.h": "c",
+        "fsm.h": "c",
+        "segger_rtt.h": "c",
+        "*.tcc": "c",
+        "optional": "c",
+        "algorithm": "c",
+        "istream": "c",
+        "type_traits": "c",
+        "typeinfo": "c",
+        "PARA.H": "cpp"
+    }
+}
