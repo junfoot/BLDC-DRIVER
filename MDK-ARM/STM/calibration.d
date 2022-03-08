@@ -40,3 +40,4 @@ stm\calibration.o: ..\mycode\control.h
 stm\calibration.o: ..\mycode\util.h
 stm\calibration.o: ..\mycode\tle.h
 stm\calibration.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+stm\calibration.o: ..\mycode\fsm.h

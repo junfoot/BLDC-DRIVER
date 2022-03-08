@@ -39,7 +39,7 @@ void CONTROLLER_reset(ControllerStruct *controller)
 {
 	// controller->input_pos = Encoder.position;
 
-    controller->input_pos = 20;
+  controller->input_pos = 20;
 	controller->input_vel = 0;
 	controller->input_torque = 0;
 	

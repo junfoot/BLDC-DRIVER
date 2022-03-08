@@ -48,7 +48,7 @@ typedef struct sFSM{
 #define	ERR_DRV_VGS_HC		((int)1<<01)
 #define	ERR_DRV_VGS_LC		((int)1<<00)
 
-void FSM_input(int order);
+void FSM_input(char *order);
 void FSM_loop(void);
 int FSM_get_error(void);
 tFsmStat FSM_get_stat(void);

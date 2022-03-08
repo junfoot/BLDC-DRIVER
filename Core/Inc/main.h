@@ -56,6 +56,8 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+extern char data[20];
+extern uint8_t Rflag;
 
 /* USER CODE END ET */
 

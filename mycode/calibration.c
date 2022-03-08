@@ -6,6 +6,7 @@
 #include "util.h"
 #include "tle.h"
 #include <math.h>
+#include "fsm.h"
 
 #define CALB_SPEED	10.0f					// Calibration speed in rad/s
 #define MOTOR_POLE_PAIRS_MAX	20
@@ -50,7 +51,6 @@ void CALIBRATION_end(void)
 		AnticoggingValid = false;
 	}
 	
-	Usr.order = 1;
 }
 
 void CALIBRATION_loop(FOCStruct *foc)
@@ -331,7 +331,7 @@ void CALIBRATION_loop(FOCStruct *foc)
 // 				}
 				
  				Usr.calib_valid = true;
-				FSM_input(1);
+				FSM_input("1");
  			}
  			break;
 		

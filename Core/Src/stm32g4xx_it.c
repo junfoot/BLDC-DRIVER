@@ -49,6 +49,10 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 int count = 0;
+
+char data[20];
+uint8_t Rflag = 0;
+uint8_t Rnum = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -214,6 +218,7 @@ void ADC1_2_IRQHandler(void)
 	
 	if( LL_ADC_IsEnabledIT_JEOS(ADC2))
 	{
+		if(Rflag == 1) Rflag = 0;
 
 		// Start VBUS Sample ADC
 		LL_ADC_REG_StartConversion(ADC1);
@@ -254,33 +259,30 @@ void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
 
-	uint8_t data,cc;
-	if(LL_USART_IsActiveFlag_RXNE(USART2)){
-		data = LL_USART_ReceiveData8(USART2);
-		LL_USART_TransmitData8(USART2,data);
-		
-		switch(data){
-			case '1':
-				Usr.order = 1;
-				break;
-			case '2':
-				Usr.order = 2;
-				break;
-			case '3':
-				Usr.order = 3;
-				break;
-			case '4':
-				Usr.order = 4;
-				break;
-			case '5':
-				Usr.order = 5;
-				break;
-			default:
-				break;
-		}	
-		FSM_input(Usr.order);
-		LL_USART_ClearFlag_ORE(USART2);
+	if(LL_USART_IsActiveFlag_IDLE(USART2)){
+		LL_USART_ClearFlag_IDLE(USART2);
+		data[Rnum] = '\0';
+		Rflag = 1;
+		Rnum = 0;
 	}
+	
+	if(LL_USART_IsActiveFlag_RXNE(USART2)){
+    if(Rnum > 18){
+      data[19] = '\0';
+      Rflag = 1;  // stop receive
+      Rnum = 0;  // wait for the next data
+    }
+
+    if(Rflag == 0){
+      data[Rnum] = LL_USART_ReceiveData8(USART2);
+      Rnum ++;
+    }
+	}
+
+	WRITE_REG(USART2->RQR, USART_RQR_RXFRQ);
+	
+	FSM_input(data);
+	
 	
   /* USER CODE END USART2_IRQn 0 */
   /* USER CODE BEGIN USART2_IRQn 1 */

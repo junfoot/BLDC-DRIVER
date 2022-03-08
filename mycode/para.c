@@ -15,9 +15,6 @@ tCoggingMap *pCoggingMap = NULL;
 
 void set_config(void)
 {
-	Usr.order = 1;
-	printf("\n\rDRV8323\n\r");
-	
 	Usr.input_mode = INPUT_MODE_PASSTHROUGH;
 	Usr.control_mode = CONTROL_MODE_POSITION_CONTROL;
 

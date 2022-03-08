@@ -139,7 +139,7 @@ int main(void)
 
   set_config();
 
-  FSM_input(1);
+  FSM_input("1");
 
   /* USER CODE END 2 */
 
@@ -157,9 +157,10 @@ int main(void)
 //		LL_mDelay(500);
 		
 		if(count == 0){
-			printf("iiiii: %d  %f  %f  %f  %f  %f\r\n",Encoder.cnt, Encoder.angle, Encoder.elec_angle, Encoder.velocity, Encoder.vel_tle, vq);
-			printf("rrr:   %f  %f  %f\r\n",Foc.i_a, Foc.i_b, Foc.i_c);
-//			printf("222 %d  %d\r\n",Foc.adc_phase_a, Foc.adc_phase_b);
+//			printf("iiiii: %d  %f  %f  %f  %f\r\n",Encoder.cnt, Encoder.angle, Encoder.elec_angle, Encoder.velocity, Encoder.vel_tle);
+//			printf("rrr:   %f  %f  %f\r\n",Foc.i_a, Foc.i_b, Foc.i_c);
+			printf("rrr:   %f  %f  %f\r\n",Controller.input_pos, Controller.input_torque, Controller.input_vel);
+			printf("222 %s\r\n",data);
 		}
 		
   }

@@ -28,41 +28,75 @@ static void reset_error(void);
 
 float vq;
 
-void FSM_input(int order)
+void FSM_input(char *order)
 {
 	// choose mode
-	switch(order){
-		case 1:
-			Fsm.next_state = FS_MENU_MODE;
+	if(strcmp(order, "1") == 0){
+		Fsm.next_state = FS_MENU_MODE;
+		Fsm.ready = 0;
+	}
+	else if(strcmp(order, "2") == 0){
+		if(mErrorCode == 0 && Usr.calib_valid){
+			Fsm.next_state = FS_MOTOR_MODE;
 			Fsm.ready = 0;
-			break;
-		case 2:
-			if(mErrorCode == 0 && Usr.calib_valid){
-				Fsm.next_state = FS_MOTOR_MODE;
-				Fsm.ready = 0;
-			}
-			break;
-		case 3:
-			Fsm.next_state = FS_CALIBRATION_MODE;
+		}
+	}
+	else if(strcmp(order, "3") == 0){
+		Fsm.next_state = FS_CALIBRATION_MODE;
+		Fsm.ready = 0;
+	}
+	else if(strcmp(order, "4") == 0){
+	  if(mErrorCode == 0 && Usr.calib_valid && Usr.input_mode == INPUT_MODE_PASSTHROUGH && Usr.control_mode == CONTROL_MODE_POSITION_CONTROL){
+			Fsm.next_state = FS_ANTICOGGING_MODE;
 			Fsm.ready = 0;
-			break;
-		case 4:
-			if(mErrorCode == 0 && Usr.calib_valid && Usr.input_mode == INPUT_MODE_PASSTHROUGH && Usr.control_mode == CONTROL_MODE_POSITION_CONTROL){
-				Fsm.next_state = FS_ANTICOGGING_MODE;
-				Fsm.ready = 0;
-			}
-			break;
-			
-		case 5:
-			if(mErrorCode == 0){
+		}
+	}
+	else if(strcmp(order, "5") == 0){
+		if(mErrorCode == 0){
 				Fsm.next_state = FS_SIMPLE_MODE;
 				Fsm.ready = 0;
 			}
-			break;
-			
-		default:
-			break;
 	}
+	else if(strcmp(order, "q") == 0){
+		if(Fsm.state == FS_MENU_MODE){
+				Usr.control_mode = CONTROL_MODE_POSITION_CONTROL;
+				printf("set control mode to POSITION\r\n");
+		}
+	}
+	else if(strcmp(order, "w") == 0){
+		if(Fsm.state == FS_MENU_MODE){
+				Usr.control_mode = CONTROL_MODE_VELOCITY_CONTROL;
+				printf("set control mode to VELOCITY\r\n");
+		}
+	}
+	else if(strcmp(order, "e") == 0){
+		if(Fsm.state == FS_MENU_MODE){
+				Usr.control_mode = CONTROL_MODE_TORQUE_CONTROL;
+				printf("set control mode to TORQUE\r\n");
+		}
+	}
+	
+	// input data
+	else{
+		const char s[2] = ":";
+		char *token, *tmp;
+		strcpy(tmp, data);
+		
+		token = strtok(tmp, s);
+		if(strcmp(token, "tin") == 0){
+			token = strtok(NULL, s);
+			Controller.input_torque = strtod(token,NULL);
+		}
+		else if(strcmp(token, "vin") == 0){
+			token = strtok(NULL, s);
+			Controller.input_vel = strtod(token,NULL);
+		}
+		else if(strcmp(token, "pin") == 0){
+			token = strtok(NULL, s);
+			Controller.input_pos = strtod(token,NULL);
+		}
+	}
+
 }
 
 int cntt = 0;
