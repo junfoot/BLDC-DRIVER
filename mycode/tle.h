@@ -23,6 +23,8 @@ typedef struct sEncoder {
 	float velocity;
 	float velocity_elec;
 	float vel_tle;
+	float velocity_last;
+	float vel_tle_last;
 	
 	float vel_vec[VEL_VEC_SIZE];
 

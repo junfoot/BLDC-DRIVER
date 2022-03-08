@@ -93,7 +93,12 @@ void Encoder_Sample(float dt)
 	// range from 0 ~ 2PI
 	Encoder.angle = Encoder.cnt * 2 * PI / ENCODER_CPR;
 
-	Encoder.elec_angle = fmod(Usr.pole_pairs * Encoder.angle, 2*PI);
+	// Elec angle
+	Encoder.elec_angle = (Usr.pole_pairs * (float)(Encoder.cnt - Usr.encoder_offset)) / ((float)ENCODER_CPR);
+	Encoder.elec_angle = 2.0f*PI*(Encoder.elec_angle - (int)Encoder.elec_angle);
+	Encoder.elec_angle = Encoder.elec_angle<0 ? Encoder.elec_angle + 2.0f*PI : Encoder.elec_angle;
+
+	// Encoder.elec_angle = fmod(Usr.pole_pairs * Encoder.angle, 2*PI);
 
 	// Turns
     if(Encoder.cnt - Encoder.cnt_last > ENCODER_CPR/2){
@@ -115,13 +120,17 @@ void Encoder_Sample(float dt)
 	Encoder.vel_vec[0] = vel;
 
   Encoder.velocity =  sum / ((float)VEL_VEC_SIZE); //turns per second
-		
-	Encoder.velocity_elec = 2.0f*PI * Encoder.velocity * Usr.pole_pairs;
-	
 	Encoder.vel_tle = tle_read_speed(dt);
 	
+	// Low pass filter
+	float alpha = 0.95;
+	Encoder.velocity = alpha*Encoder.velocity_last + (1 - alpha) * Encoder.velocity;
+	Encoder.vel_tle = alpha*Encoder.vel_tle_last + (1 - alpha) * Encoder.vel_tle;
 	
+	Encoder.velocity_elec = 2.0f*PI * Encoder.velocity * Usr.pole_pairs;
 	Encoder.cnt_last = Encoder.cnt;
+	Encoder.velocity_last = Encoder.velocity;
+	Encoder.vel_tle_last = Encoder.vel_tle;
 
 }
 

@@ -44,3 +44,4 @@ stm\main.o: ..\mycode\para.h
 stm\main.o: ..\mycode\fsm.h
 stm\main.o: ..\mycode\control.h
 stm\main.o: ..\mycode\anticog.h
+stm\main.o: ..\mycode\simplefoc.h

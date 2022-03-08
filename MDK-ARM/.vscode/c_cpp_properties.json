@@ -3,18 +3,18 @@
         {
             "name": "STM",
             "includePath": [
-                "f:\\reha_driver\\STM\\Core\\Inc",
-                "f:\\reha_driver\\STM\\Drivers\\STM32G4xx_HAL_Driver\\Inc",
-                "f:\\reha_driver\\STM\\Drivers\\CMSIS\\Device\\ST\\STM32G4xx\\Include",
-                "f:\\reha_driver\\STM\\Drivers\\CMSIS\\Include",
-                "f:\\reha_driver\\STM\\RTT",
-                "f:\\reha_driver\\STM\\mycode",
-                "f:\\reha_driver\\STM\\Drivers\\CMSIS\\Core\\Include",
+                "f:\\reha_driver\\STM - 20220305\\Core\\Inc",
+                "f:\\reha_driver\\STM - 20220305\\Drivers\\STM32G4xx_HAL_Driver\\Inc",
+                "f:\\reha_driver\\STM - 20220305\\Drivers\\CMSIS\\Device\\ST\\STM32G4xx\\Include",
+                "f:\\reha_driver\\STM - 20220305\\Drivers\\CMSIS\\Include",
+                "f:\\reha_driver\\STM - 20220305\\RTT",
+                "f:\\reha_driver\\STM - 20220305\\mycode",
+                "f:\\reha_driver\\STM - 20220305\\Drivers\\CMSIS\\Core\\Include",
                 "C:\\Keil_v5\\ARM\\ARMCC\\include",
                 "C:\\Keil_v5\\ARM\\ARMCC\\include\\rw",
-                "f:\\reha_driver\\STM\\MDK-ARM",
-                "f:\\reha_driver\\STM\\Core\\Src",
-                "f:\\reha_driver\\STM\\Drivers\\STM32G4xx_HAL_Driver\\Src"
+                "f:\\reha_driver\\STM - 20220305\\MDK-ARM",
+                "f:\\reha_driver\\STM - 20220305\\Core\\Src",
+                "f:\\reha_driver\\STM - 20220305\\Drivers\\STM32G4xx_HAL_Driver\\Src"
             ],
             "defines": [
                 "STM32G431xx",

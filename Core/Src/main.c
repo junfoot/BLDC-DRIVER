@@ -38,6 +38,7 @@
 #include "control.h"
 #include "anticog.h"
 #include <stdio.h>
+#include "simplefoc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,6 +59,7 @@
 
 /* USER CODE BEGIN PV */
 extern int count;
+extern float vq;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -123,6 +125,8 @@ int main(void)
   Encoder.turns = 0;
   Encoder.position_last = 0;
   Encoder.cnt_last = 0;
+	Encoder.velocity_last = 0;
+	Encoder.vel_tle_last = 0;
 
 		
 	LL_TIM_EnableCounter(TIM1);
@@ -152,12 +156,11 @@ int main(void)
 //		LL_GPIO_TogglePin(GPIOB, LL_GPIO_PIN_6);
 //		LL_mDelay(500);
 		
-//		if(count == 0){
-			printf("iiiii: %d  %f  %f  %f  %f\r\n",Encoder.cnt, Encoder.angle, Encoder.elec_angle, Encoder.velocity, Encoder.vel_tle);
-//			printf("iiiii:   %f  %f  %f\r\n",Foc.i_a, Foc.i_b, Foc.i_c);
-//			printf("222 %d  %d\r\n",Usr.order, FSM_get_stat());
+		if(count == 0){
+			printf("iiiii: %d  %f  %f  %f  %f  %f\r\n",Encoder.cnt, Encoder.angle, Encoder.elec_angle, Encoder.velocity, Encoder.vel_tle, vq);
+			printf("rrr:   %f  %f  %f\r\n",Foc.i_a, Foc.i_b, Foc.i_c);
 //			printf("222 %d  %d\r\n",Foc.adc_phase_a, Foc.adc_phase_b);
-//		}
+		}
 		
   }
   /* USER CODE END 3 */

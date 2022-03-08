@@ -35,3 +35,4 @@ stm\simplefoc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 stm\simplefoc.o: ..\mycode\tle.h
 stm\simplefoc.o: ..\mycode\util.h
 stm\simplefoc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+stm\simplefoc.o: ..\mycode\para.h

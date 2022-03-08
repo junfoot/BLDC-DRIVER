@@ -27,7 +27,7 @@ float CONTROLLER_get_integrator_current(void)
 static void move_to_pos(float goal_point)
 {
     TRAJ_plan(goal_point, mPosSetPoint, mVelSetPoint,
-                                 Usr.traj_vel,		// Velocity
+                                 Usr.traj_vel,		    // Velocity
                                  Usr.traj_accel,		// Acceleration
                                  Usr.traj_decel);		// Deceleration
 	
@@ -37,9 +37,11 @@ static void move_to_pos(float goal_point)
 
 void CONTROLLER_reset(ControllerStruct *controller)
 {
-	controller->input_pos = Encoder.position;
+	// controller->input_pos = Encoder.position;
+
+    controller->input_pos = 20;
 	controller->input_vel = 0;
-	controller->input_torque = 0.1;
+	controller->input_torque = 0;
 	
 	mPosSetPoint = controller->input_pos;
 	mVelSetPoint = 0;

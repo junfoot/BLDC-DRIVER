@@ -20,12 +20,9 @@ void FOC_zero_current(FOCStruct *foc)
         SYSTICK_delay_us(100);
         adc_sum_a += foc->adc_phase_a;
         adc_sum_b += foc->adc_phase_b;
-        // SEGGER_RTT_printf(0,"ggg: %X  %X\r\n",foc->adc_phase_a, foc->adc_phase_b);
     }
-    // SEGGER_RTT_printf(0,": %X  %X\r\n",adc_sum_a, adc_sum_b);
     foc->adc_phase_a_offset = adc_sum_a/n;
     foc->adc_phase_b_offset = adc_sum_b/n;
-    printf("fffi: %X  %X\r\n",foc->adc_phase_a_offset, foc->adc_phase_b_offset);
 }
 
 void FOC_arm(void)
@@ -63,12 +60,12 @@ void FOC_reset(FOCStruct *foc)
 	TIM1->CCR1 = (PWM_ARR>>1);
 	
     foc->i_d_filt = 0;
-	foc->i_q_filt = 0;
+		foc->i_q_filt = 0;
     foc->current_ctrl_integral_d = 0;
     foc->current_ctrl_integral_q = 0;
 }
 
-void FOC_current(FOCStruct *foc, float Id_des, float Iq_des, float I_phase, float pwm_phase)
+float FOC_current(FOCStruct *foc, float Id_des, float Iq_des, float I_phase, float pwm_phase)
 {
 	// Clarke transform
 	float i_alpha, i_beta;
@@ -87,6 +84,7 @@ void FOC_current(FOCStruct *foc, float Id_des, float Iq_des, float I_phase, floa
 	float Ierr_q = Iq_des - i_q;
 	float v_d = Usr.current_ctrl_p_gain * Ierr_d + foc->current_ctrl_integral_d;
 	float v_q = Usr.current_ctrl_p_gain * Ierr_q + foc->current_ctrl_integral_q;
+	
 	
 		// Modulation
 		float mod_to_V = (2.0f / 3.0f) * foc->v_bus;
@@ -124,6 +122,8 @@ void FOC_current(FOCStruct *foc, float Id_des, float Iq_des, float I_phase, floa
 	TIM1->CCR3 = (uint16_t)(dtc_a * (float)PWM_ARR);
 	TIM1->CCR2 = (uint16_t)(dtc_b * (float)PWM_ARR);
 	TIM1->CCR1 = (uint16_t)(dtc_c * (float)PWM_ARR);
+		
+	return v_q;
 }
 
 void clarke_transform(float Ia, float Ib, float Ic, float *Ialpha, float *Ibeta)

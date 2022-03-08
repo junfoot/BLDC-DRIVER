@@ -10,13 +10,18 @@ typedef struct sSimple_para{
 	float simple_D;
 	
 	float simple_Uq;
+	float velocity;
 	
+	float integral_prev;
+	float error_prev;
+	float vel_limit;
 	
 } tSimple_para;
 
 
 extern tSimple_para simple_para;
 void set_simple_para();
+void set_Uq(tSimple_para *simple_para);
 void simple_algorithm(FOCStruct *foc, tSimple_para *simple_para, float theta);
 
 #endif

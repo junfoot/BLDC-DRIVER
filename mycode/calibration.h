@@ -39,5 +39,6 @@ typedef enum eCalibrationError{
 void CALIBRATION_start(void);
 void CALIBRATION_end(void);
 void CALIBRATION_loop(FOCStruct *foc);
+void apply_voltage_timings(float vbus, float v_d, float v_q, float pwm_phase);
 
 #endif

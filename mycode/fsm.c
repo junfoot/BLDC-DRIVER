@@ -26,6 +26,8 @@ static void enter_state(void);
 static void exit_state(void);
 static void reset_error(void);
 
+float vq;
+
 void FSM_input(int order)
 {
 	// choose mode
@@ -35,7 +37,7 @@ void FSM_input(int order)
 			Fsm.ready = 0;
 			break;
 		case 2:
-			if(mErrorCode == 0){
+			if(mErrorCode == 0 && Usr.calib_valid){
 				Fsm.next_state = FS_MOTOR_MODE;
 				Fsm.ready = 0;
 			}
@@ -87,14 +89,13 @@ void FSM_loop(void)
 			{
 				float current_setpoint = 0;
 				current_setpoint = current_calculate(&Controller);
+
+				vq = FOC_current(&Foc, 0, current_setpoint, Encoder.elec_angle, Encoder.elec_angle+ 1.5f*DT*Encoder.velocity_elec);
 				
-				// FOC_current(&Foc, 0, current_setpoint, Encoder.angle, Encoder.angle + 1.5f*DT*Encoder.velocity);
-				FOC_current(&Foc, 0, current_setpoint, Encoder.elec_angle, Encoder.elec_angle);
-				
-//				// Over speed check
-//				if(fabs(Encoder.velocity) > Usr.protect_over_speed){
-//					mErrorCode |= ERR_OVER_SPEED;
-//				}
+				// Over speed check
+				if(fabs(Encoder.velocity) > Usr.protect_over_speed){
+					mErrorCode |= ERR_OVER_SPEED;
+				}
 			}
 			break;
 			
@@ -104,7 +105,9 @@ void FSM_loop(void)
 		
 		case FS_SIMPLE_MODE:
 			
-			simple_algorithm(&Foc, &simple_para, Encoder.elec_angle);
+			set_Uq(&simple_para);
+//			simple_algorithm(&Foc, &simple_para, Encoder.elec_angle);
+			apply_voltage_timings(Foc.v_bus, 0, simple_para.simple_Uq, Encoder.elec_angle);
 		
 			break;
 

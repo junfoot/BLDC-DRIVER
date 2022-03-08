@@ -19,7 +19,7 @@ void set_config(void)
 	printf("\n\rDRV8323\n\r");
 	
 	Usr.input_mode = INPUT_MODE_PASSTHROUGH;
-	Usr.control_mode = CONTROL_MODE_TORQUE_CONTROL;
+	Usr.control_mode = CONTROL_MODE_POSITION_CONTROL;
 
 // 	typedef enum {
 // 	INPUT_MODE_PASSTHROUGH        = 0,
@@ -57,9 +57,6 @@ void set_config(void)
 	Usr.protect_under_voltage = 12;
 	Usr.protect_over_voltage  = 30;
 	Usr.protect_over_speed = 100;
-
-	Usr.current_ctrl_p_gain = 1;
-	Usr.current_ctrl_i_gain = 0;
 	
 	Usr.traj_vel = 50;
 	Usr.traj_accel = 100;
@@ -76,7 +73,7 @@ void set_config(void)
 	// Calib
 	Usr.calib_valid = 0;
 	Usr.calib_current = 10.0f;
-	Usr.calib_max_voltage = 2.0f;
+	Usr.calib_max_voltage = 5.0f;
 	
 	Usr.current_ctrl_bandwidth = 1000;
 	
