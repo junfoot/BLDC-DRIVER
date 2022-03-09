@@ -28,6 +28,9 @@ static void reset_error(void);
 
 float vq;
 
+char tmp1[10], tmp2[10];
+float temp;
+
 void FSM_input(char *order)
 {
 	// choose mode
@@ -78,22 +81,17 @@ void FSM_input(char *order)
 	
 	// input data
 	else{
-		const char s[2] = ":";
-		char *token, *tmp;
-		strcpy(tmp, data);
+		sscanf(data, "%s %s",tmp1,tmp2);
+		temp = strtof(tmp2,NULL);
 		
-		token = strtok(tmp, s);
-		if(strcmp(token, "tin") == 0){
-			token = strtok(NULL, s);
-			Controller.input_torque = strtod(token,NULL);
+		if(strcmp(tmp1, "tin") == 0){
+			Controller.input_torque = temp;
 		}
-		else if(strcmp(token, "vin") == 0){
-			token = strtok(NULL, s);
-			Controller.input_vel = strtod(token,NULL);
+		else if(strcmp(tmp1, "vin") == 0){
+			Controller.input_vel = temp;
 		}
-		else if(strcmp(token, "pin") == 0){
-			token = strtok(NULL, s);
-			Controller.input_pos = strtod(token,NULL);
+		else if(strcmp(tmp1, "pin") == 0){
+			Controller.input_pos = temp;
 		}
 	}
 

@@ -89,6 +89,13 @@ float tle_read_speed(float dt)
 void Encoder_Sample(float dt)
 {
 	Encoder.cnt = tle_read_cnt();
+	
+//	if(Usr.calib_valid){
+//		int off_1 = Usr.offset_lut[Encoder.cnt>>7];
+//		int off_2 = Usr.offset_lut[((Encoder.cnt>>7)+1)%128];
+//		int off_interp = off_1 + ((off_2 - off_1) * (Encoder.cnt- ((Encoder.cnt>>7)<<7)) >> 7); 
+//		Encoder.cnt = Encoder.cnt - off_interp;
+//	}
 
 	// range from 0 ~ 2PI
 	Encoder.angle = Encoder.cnt * 2 * PI / ENCODER_CPR;

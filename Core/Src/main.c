@@ -60,6 +60,9 @@
 /* USER CODE BEGIN PV */
 extern int count;
 extern float vq;
+
+extern char tmp1[10], tmp2[10];
+extern float temp;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -151,16 +154,18 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-		LED_loop();
+		
 //    ANTICOGGING_loop(&Controller);
 //		LL_GPIO_TogglePin(GPIOB, LL_GPIO_PIN_6);
 //		LL_mDelay(500);
+	
 		
 		if(count == 0){
-//			printf("iiiii: %d  %f  %f  %f  %f\r\n",Encoder.cnt, Encoder.angle, Encoder.elec_angle, Encoder.velocity, Encoder.vel_tle);
-//			printf("rrr:   %f  %f  %f\r\n",Foc.i_a, Foc.i_b, Foc.i_c);
-			printf("rrr:   %f  %f  %f\r\n",Controller.input_pos, Controller.input_torque, Controller.input_vel);
-			printf("222 %s\r\n",data);
+			printf("iiiii: %f  %f  %f  %f  %f\r\n",Encoder.position, Encoder.angle, Encoder.elec_angle, Encoder.velocity, Encoder.vel_tle);
+			printf("rrrrr: %f  %f  %f\r\n",Foc.i_a, Foc.i_b, Foc.i_c);
+//			printf("ttttt: %d  %d\r\n",Encoder.cnt, Encoder.cnt_offset);
+			printf("pos: %f  tor: %f  vel: %f\r\n",Controller.input_pos, Controller.input_torque, Controller.input_vel);
+//			printf("222 %s %s %s\r\n",data,tmp1,tmp2);
 		}
 		
   }

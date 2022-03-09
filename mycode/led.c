@@ -26,7 +26,6 @@ void LED_loop(void)
 		
 		case FS_MOTOR_MODE:
 		case FS_SIMPLE_MODE:
-			// SEGGER_RTT_printf(0,"56757\r\n");
 			if(cnt == 0){
 				LED_set(1);
 			}else if(cnt == 100){

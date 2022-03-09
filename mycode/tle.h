@@ -17,6 +17,7 @@ typedef struct sEncoder {
 	float position_last;
 	int turns;
 	int cnt;
+	int cnt_offset;
 	int cnt_last;
 	float angle;
 	float elec_angle;

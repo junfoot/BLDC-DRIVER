@@ -36,3 +36,4 @@ stm\stm32g4xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 stm\stm32g4xx_it.o: ..\mycode\para.h
 stm\stm32g4xx_it.o: ..\mycode\fsm.h
 stm\stm32g4xx_it.o: ..\mycode\tle.h
+stm\stm32g4xx_it.o: ..\mycode\led.h

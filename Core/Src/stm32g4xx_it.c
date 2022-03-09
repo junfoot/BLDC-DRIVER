@@ -29,6 +29,7 @@
 #include "fsm.h"
 #include "tle.h"
 #include "fsm.h"
+#include "led.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -215,10 +216,14 @@ void SysTick_Handler(void)
 void ADC1_2_IRQHandler(void)
 {
   /* USER CODE BEGIN ADC1_2_IRQn 0 */
+	LED_loop();
+
 	
 	if( LL_ADC_IsEnabledIT_JEOS(ADC2))
 	{
-		if(Rflag == 1) Rflag = 0;
+		if(Rflag){	
+			Rflag = 0;
+		}
 
 		// Start VBUS Sample ADC
 		LL_ADC_REG_StartConversion(ADC1);
@@ -258,7 +263,8 @@ void ADC1_2_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
-
+	
+	
 	if(LL_USART_IsActiveFlag_IDLE(USART2)){
 		LL_USART_ClearFlag_IDLE(USART2);
 		data[Rnum] = '\0';
@@ -278,12 +284,10 @@ void USART2_IRQHandler(void)
       Rnum ++;
     }
 	}
-
-	WRITE_REG(USART2->RQR, USART_RQR_RXFRQ);
 	
 	FSM_input(data);
 	
-	
+	WRITE_REG(USART2->RQR, USART_RQR_RXFRQ);
   /* USER CODE END USART2_IRQn 0 */
   /* USER CODE BEGIN USART2_IRQn 1 */
 

@@ -70,7 +70,7 @@ void set_config(void)
 	// Calib
 	Usr.calib_valid = 0;
 	Usr.calib_current = 10.0f;
-	Usr.calib_max_voltage = 5.0f;
+	Usr.calib_max_voltage = 3.0f;
 	
 	Usr.current_ctrl_bandwidth = 1000;
 	

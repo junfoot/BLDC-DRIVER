@@ -91,14 +91,15 @@ void CALIBRATION_loop(FOCStruct *foc)
 		
 		case CS_MOTOR_R_LOOP:
 
-			// voltages[0] += (kI * DT) * (Usr.calib_current - foc->i_c);
-			voltages[0] = 2.0f;
+			voltages[0] += (kI * DT) * (Usr.calib_current - foc->i_c);
+//			voltages[0] = 2.0f;
 
 			// 电压不在设定范围
 			if (voltages[0] > Usr.calib_max_voltage || voltages[0] < -Usr.calib_max_voltage){
 				FOC_disarm();
 				mCalibError = CE_PHASE_RESISTANCE_OUT_OF_RANGE;
 				mCalibStep = CS_ERROR;
+//				voltages[0] = 2.0f;
 				break;
 			}
 			
@@ -176,8 +177,8 @@ void CALIBRATION_loop(FOCStruct *foc)
 		
  		case CS_ENCODER_DIR_FIND_START:
  			loop_count = 0;
- 			// voltages[0] = Usr.calib_current * Usr.phase_resistance;
-			voltages[0] = 2.0f;
+ 			voltages[0] = Usr.calib_current * Usr.phase_resistance;
+//			voltages[0] = 2.0f;
  			FOC_arm();
  			mCalibStep = CS_ENCODER_DIR_FIND_LOCK;
  			break;
@@ -230,8 +231,8 @@ void CALIBRATION_loop(FOCStruct *foc)
  			next_sample_time = 0;
  			theta_ref = 0;
  			loop_count = 0;
- 			// voltages[0] = Usr.calib_current * Usr.phase_resistance;
-			voltages[0] = 2.0f;
+ 			voltages[0] = Usr.calib_current * Usr.phase_resistance;
+//			voltages[0] = 2.0f;
  			FOC_arm();
  			mCalibStep = CS_ENCODER_OFFSET_LOCK;
  			break;
@@ -240,6 +241,7 @@ void CALIBRATION_loop(FOCStruct *foc)
  			apply_voltage_timings(foc->v_bus, (voltages[0] * time / 2.0f), 0, theta_ref);
  			if (time >= 2){
  				loop_count = 0;
+				raw_offset = Encoder.cnt;
  				mCalibStep = CS_ENCODER_OFFSET_CW_LOOP;
  				break;
  			}
@@ -285,6 +287,8 @@ void CALIBRATION_loop(FOCStruct *foc)
  			}
 
  			if (time >= 2.0f*PI*Usr.pole_pairs/CALB_SPEED){
+				raw_offset += Encoder.cnt;
+				raw_offset /= 2;
  				FOC_disarm();
  				mCalibStep = CS_ENCODER_OFFSET_END;
  				break;
@@ -301,34 +305,27 @@ void CALIBRATION_loop(FOCStruct *foc)
  				Usr.encoder_offset = ezero_mean/(Usr.pole_pairs*SAMPLES_PER_PPAIR);
  				printf("Encoder Offset = %d\n\r",  Usr.encoder_offset);
 		
-// 				// Moving average to filter out cogging ripple
-// 				int window = SAMPLES_PER_PPAIR;
-// 				raw_offset = OFFSET_LUT_NUM * raw_offset / ENCODER_CPR;
-// 				for(int i = 0; i<OFFSET_LUT_NUM; i++){
-// 					int moving_avg = 0;
-// 					for(int j = (-window)/2; j<(window)/2; j++){
-// 						int index = i*Usr.pole_pairs*SAMPLES_PER_PPAIR/OFFSET_LUT_NUM + j;
-// 						if(index < 0){
-// 							index += (SAMPLES_PER_PPAIR*Usr.pole_pairs);
-// 						}else if(index > (SAMPLES_PER_PPAIR*Usr.pole_pairs-1)){
-// 							index -= (SAMPLES_PER_PPAIR*Usr.pole_pairs);
-// 						}
-// 						moving_avg += p_error_arr[index];
-// 					}
-// 					moving_avg = moving_avg/window;
-// 					int lut_index = raw_offset + i;
-// 					if(lut_index > (OFFSET_LUT_NUM-1)){
-// 						lut_index -= OFFSET_LUT_NUM;
-// 					}
-// 					Usr.offset_lut[lut_index] = moving_avg - Usr.encoder_offset;
-// 				}
-//				
-// 				// CAN report
-// 				for(int i=0; i<OFFSET_LUT_NUM; i++){
-// 					int_to_data(Usr.offset_lut[i], data);
-// //					FDCAN_report_calibration(i+10, data);
-// 					SYSTICK_delay_ms(10);
-// 				}
+ 				// Moving average to filter out cogging ripple
+ 				int window = SAMPLES_PER_PPAIR;
+ 				raw_offset = OFFSET_LUT_NUM * raw_offset / ENCODER_CPR;
+ 				for(int i = 0; i<OFFSET_LUT_NUM; i++){
+ 					int moving_avg = 0;
+ 					for(int j = (-window)/2; j<(window)/2; j++){
+ 						int index = i*Usr.pole_pairs*SAMPLES_PER_PPAIR/OFFSET_LUT_NUM + j;
+ 						if(index < 0){
+ 							index += (SAMPLES_PER_PPAIR*Usr.pole_pairs);
+ 						}else if(index > (SAMPLES_PER_PPAIR*Usr.pole_pairs-1)){
+ 							index -= (SAMPLES_PER_PPAIR*Usr.pole_pairs);
+ 						}
+ 						moving_avg += p_error_arr[index];
+ 					}
+ 					moving_avg = moving_avg/window;
+ 					int lut_index = raw_offset + i;
+ 					if(lut_index > (OFFSET_LUT_NUM-1)){
+ 						lut_index -= OFFSET_LUT_NUM;
+ 					}
+ 					Usr.offset_lut[lut_index] = moving_avg - Usr.encoder_offset;
+ 				}
 				
  				Usr.calib_valid = true;
 				FSM_input("1");
@@ -348,6 +345,8 @@ void CALIBRATION_loop(FOCStruct *foc)
 	loop_count ++;
 }
 
+
+// like simpleFOC
 void apply_voltage_timings(float vbus, float v_d, float v_q, float pwm_phase)
 {
 	// Modulation
