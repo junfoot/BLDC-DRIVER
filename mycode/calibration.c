@@ -115,7 +115,7 @@ void CALIBRATION_loop(FOCStruct *foc)
 			
 		case CS_MOTOR_R_END:
 			Usr.phase_resistance = (voltages[0] / Usr.calib_current) * (2.0f / 3.0f);
-			printf("phase_resistance = %f\n\r", Usr.phase_resistance);
+			
 			mCalibStep = CS_MOTOR_L_START;
 			break;
 		
@@ -152,7 +152,6 @@ void CALIBRATION_loop(FOCStruct *foc)
 				float dI_by_dt = (Ialphas[0] - Ialphas[1]) / (DT * num_L_cycles);
 				float L = Usr.calib_max_voltage / dI_by_dt;
 				Usr.phase_inductance = L * (2.0f / 3.0f);
-				printf("phase_inductance = %f\n\r", Usr.phase_inductance);
 				
 				// Calculate current control gains
 				float p_gain = Usr.current_ctrl_bandwidth * Usr.phase_inductance;
@@ -161,8 +160,6 @@ void CALIBRATION_loop(FOCStruct *foc)
 
 				Usr.current_ctrl_p_gain = p_gain;
 				Usr.current_ctrl_i_gain = i_gain;
-
-				printf("PI: %f    %f\n\r", p_gain, i_gain);
 				
 				mCalibStep = CS_ENCODER_DIR_FIND_START;
 
@@ -206,7 +203,6 @@ void CALIBRATION_loop(FOCStruct *foc)
  		case CS_ENCODER_DIR_FIND_END:
  			// Check motor pole pairs
  			Usr.pole_pairs = round(2.0f/fabsf(end_position-start_position));
- 			printf("Pole pairs = %d\n\r", Usr.pole_pairs);
  			if(Usr.pole_pairs > MOTOR_POLE_PAIRS_MAX){
  				mCalibError = CE_MOTOR_POLE_PAIRS_OUT_OF_RANGE;
  				mCalibStep = CS_ERROR;
@@ -221,7 +217,7 @@ void CALIBRATION_loop(FOCStruct *foc)
  				// motor opposite dir as encoder
  				Usr.encoder_dir_rev = 1;
  			}
- 			printf("Encoder dir rev = %d\n\r", Usr.encoder_dir_rev);
+
 			
  			mCalibStep = CS_ENCODER_OFFSET_START;
  			break;
@@ -303,7 +299,7 @@ void CALIBRATION_loop(FOCStruct *foc)
  					ezero_mean += p_error_arr[i];
  				}
  				Usr.encoder_offset = ezero_mean/(Usr.pole_pairs*SAMPLES_PER_PPAIR);
- 				printf("Encoder Offset = %d\n\r",  Usr.encoder_offset);
+
 		
  				// Moving average to filter out cogging ripple
  				int window = SAMPLES_PER_PPAIR;
@@ -327,7 +323,7 @@ void CALIBRATION_loop(FOCStruct *foc)
  					Usr.offset_lut[lut_index] = moving_avg - Usr.encoder_offset;
  				}
 				
- 				Usr.calib_valid = true;
+ 				Usr.calib_valid = 2;
 				FSM_input("1");
  			}
  			break;

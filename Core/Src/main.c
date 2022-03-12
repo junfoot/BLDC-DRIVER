@@ -122,6 +122,7 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM1_Init();
   MX_USART2_UART_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
   // tle init
@@ -154,20 +155,13 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-		
-//    ANTICOGGING_loop(&Controller);
-//		LL_GPIO_TogglePin(GPIOB, LL_GPIO_PIN_6);
-//		LL_mDelay(500);
 	
-		
-		if(count == 0){
-			printf("iiiii: %f  %f  %f  %f  %f\r\n",Encoder.position, Encoder.angle, Encoder.elec_angle, Encoder.velocity, Encoder.vel_tle);
-			printf("rrrrr: %f  %f  %f\r\n",Foc.i_a, Foc.i_b, Foc.i_c);
-//			printf("ttttt: %d  %d\r\n",Encoder.cnt, Encoder.cnt_offset);
-			printf("pos: %f  tor: %f  vel: %f\r\n",Controller.input_pos, Controller.input_torque, Controller.input_vel);
-//			printf("222 %s %s %s\r\n",data,tmp1,tmp2);
-		}
-		
+//    ANTICOGGING_loop(&Controller);
+
+//		if(count == 0){
+//			printf("mute %f %f %f %f %f %f %f %f\r\n",Foc.i_a,Foc.i_b,Foc.i_c,Encoder.position, Encoder.velocity, \
+//																								Controller.input_pos, Controller.input_torque, Controller.input_vel);		
+//		}
   }
   /* USER CODE END 3 */
 }

@@ -37,9 +37,7 @@ static void move_to_pos(float goal_point)
 
 void CONTROLLER_reset(ControllerStruct *controller)
 {
-	// controller->input_pos = Encoder.position;
-
-  controller->input_pos = 20;
+	controller->input_pos = Encoder.position;
 	controller->input_vel = 0;
 	controller->input_torque = 0;
 	
@@ -57,14 +55,14 @@ void CONTROLLER_reset(ControllerStruct *controller)
 
 float current_calculate(ControllerStruct *controller)
 {
-// Update inputs
+		// Update inputs
     switch (Usr.input_mode) {
         case INPUT_MODE_PASSTHROUGH: {
             mPosSetPoint = Controller.input_pos;
             mVelSetPoint = Controller.input_vel;
             mTorqueSetPoint = Controller.input_torque; 
         } break;
-		case INPUT_MODE_TORQUE_RAMP: {
+				case INPUT_MODE_TORQUE_RAMP: {
             float max_step_size = fabs(DT * Usr.torque_ramp_rate);
             float full_step = Controller.input_torque - mTorqueSetPoint;
             float step = CLAMP(full_step, -max_step_size, max_step_size);
@@ -115,43 +113,51 @@ float current_calculate(ControllerStruct *controller)
         default: {
         } break;
     }
+
+    float current,error_pos,error;
+		float proportional,integral,derivative;
+    switch(Usr.control_mode){
+        case CONTROL_MODE_POSITION_CONTROL:
+
+            error = mPosSetPoint - Encoder.position;
+
+            // u_p  = P *e(k)
+            proportional = Usr.pos_P * error;
+            // u_ik = u_ik_1  + I*Ts/2*(ek + ek_1)
+            integral = Usr.pos_integral_prev + Usr.pos_I * DT * 0.5f * (error + Usr.pos_error_prev);
+            // u_dk = D(ek - ek_1)/Ts
+						derivative = Usr.pos_D * (error - Usr.pos_error_prev)/DT;
+            // sum all the components
+            current = proportional + integral + derivative;
 	
-	// Position control
-    // TODO Decide if we want to use encoder or pll position here
-    float gain_scheduling_multiplier = 1.0f;
-    float vel_des = mVelSetPoint;
-    if (Usr.control_mode >= CONTROL_MODE_POSITION_CONTROL) {
-        float pos_err;
-		pos_err = mPosSetPoint - Encoder.position;
-        vel_des += Usr.pos_gain * pos_err;
-        // V-shaped gain shedule based on position error
-        float abs_pos_err = fabs(pos_err);
-        if (Usr.gain_scheduling_enable && abs_pos_err <= Usr.gain_scheduling_width) {
-            gain_scheduling_multiplier = abs_pos_err / Usr.gain_scheduling_width;
-        }
+            // saving for the next pass
+            Usr.pos_integral_prev = integral;
+            Usr.pos_error_prev = error;
+
+            break;
+        case CONTROL_MODE_VELOCITY_CONTROL:
+
+            error = mVelSetPoint - Encoder.velocity;
+            // u_p  = P *e(k)
+            proportional = Usr.vel_P * error;
+            // u_ik = u_ik_1  + I*Ts/2*(ek + ek_1)
+            integral = Usr.vel_integral_prev + Usr.vel_I * DT * 0.5f * (error + Usr.vel_error_prev);
+            // u_dk = D(ek - ek_1)/Ts
+            // sum all the components
+            current = proportional + integral;
+	
+            // saving for the next pass
+            Usr.vel_integral_prev = integral;
+            Usr.vel_error_prev = error;
+            
+
+            break;
+        case CONTROL_MODE_TORQUE_CONTROL:
+            current = mTorqueSetPoint / Usr.torque_constant;
+            break;
+        default:
+            break;
     }
-
-    // Velocity limiting
-    vel_des = CLAMP(vel_des, -Usr.vel_limit, Usr.vel_limit);
-
-    // Velocity control
-    float torque = mTorqueSetPoint;
-
-    float v_err = 0.0f;
-    if (Usr.control_mode >= CONTROL_MODE_VELOCITY_CONTROL) {
-        v_err = vel_des - Encoder.velocity;
-        torque += (Usr.vel_gain * gain_scheduling_multiplier) * v_err;
-
-        // Velocity integral action before limiting
-        torque += vel_integrator_torque;
-    }
-	
-	float current = torque / Usr.torque_constant;
-	
-	// Anticogging
-	if(Usr.anticogging_enable && AnticoggingValid){
-		current += pCoggingMap->map[(COGGING_MAP_NUM-1)*Encoder.cnt/ENCODER_CPR];
-	}
 
     // Current limit
     bool limited = false;
@@ -164,17 +170,7 @@ float current_calculate(ControllerStruct *controller)
         current = -Usr.current_limit;
     }
 
-    // Velocity integrator (behaviour dependent on limiting)
-    if (Usr.control_mode < CONTROL_MODE_VELOCITY_CONTROL) {
-        // reset integral if not in use
-        vel_integrator_torque = 0.0f;
-    } else {
-        if (limited) {
-            vel_integrator_torque *= 0.99f;
-        } else {
-            vel_integrator_torque += ((Usr.vel_integrator_gain * gain_scheduling_multiplier) * DT) * v_err;
-        }
-    }
-	
-	return current;
+    return current;
 }
+
+

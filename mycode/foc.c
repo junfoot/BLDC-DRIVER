@@ -13,6 +13,7 @@ static bool mIsArmed = false;
 
 void FOC_zero_current(FOCStruct *foc)
 {
+	
     int adc_sum_a = 0;
     int adc_sum_b = 0;
     int n = 1000;
@@ -55,10 +56,14 @@ bool FOC_is_armed(void)
 void FOC_reset(FOCStruct *foc)
 {
     /* Set all duty to 50% */
-	TIM1->CCR3 = (PWM_ARR>>1);
-	TIM1->CCR2 = (PWM_ARR>>1);
-	TIM1->CCR1 = (PWM_ARR>>1);
+		TIM1->CCR3 = (PWM_ARR>>1);
+		TIM1->CCR2 = (PWM_ARR>>1);
+		TIM1->CCR1 = (PWM_ARR>>1);
 	
+		Foc.i_a_prev = 0;
+		Foc.i_b_prev = 0;
+		Foc.i_c_prev = 0;
+		
     foc->i_d_filt = 0;
 		foc->i_q_filt = 0;
     foc->current_ctrl_integral_d = 0;
@@ -86,8 +91,8 @@ float FOC_current(FOCStruct *foc, float Id_des, float Iq_des, float I_phase, flo
 	float v_q = Usr.current_ctrl_p_gain * Ierr_q + foc->current_ctrl_integral_q;
 	
 	
-		// Modulation
-		float mod_to_V = (2.0f / 3.0f) * foc->v_bus;
+    // Modulation
+    float mod_to_V = (2.0f / 3.0f) * foc->v_bus;
     float V_to_mod = 1.0f / mod_to_V;
     float mod_d = V_to_mod * v_d;
     float mod_q = V_to_mod * v_q;
@@ -109,7 +114,7 @@ float FOC_current(FOCStruct *foc, float Id_des, float Iq_des, float I_phase, flo
 	
 	// Inverse park transform
 	float mod_alpha;
-  float mod_beta;
+    float mod_beta;
 	inverse_park(mod_d, mod_q, pwm_phase, &mod_alpha, &mod_beta);
 
 	// SVM

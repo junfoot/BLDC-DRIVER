@@ -73,6 +73,17 @@ typedef struct sUsrConfig
 	int current_ctrl_bandwidth; // Current loop bandwidth 100~2000
 	
 	uint32_t crc;
+	
+	float vel_P;
+	float vel_I;
+	float pos_P;
+	float pos_I;
+	float pos_D;
+
+	float vel_integral_prev;
+	float vel_error_prev;
+	float pos_integral_prev;
+	float pos_error_prev;
 
 }UsrConfig;
 

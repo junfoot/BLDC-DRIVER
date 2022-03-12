@@ -30,6 +30,7 @@
 #include "tle.h"
 #include "fsm.h"
 #include "led.h"
+#include "control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,6 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 int count = 0;
+int tim_cnt = 0;
 
 char data[20];
 uint8_t Rflag = 0;
@@ -217,13 +219,10 @@ void ADC1_2_IRQHandler(void)
 {
   /* USER CODE BEGIN ADC1_2_IRQn 0 */
 	LED_loop();
-
 	
 	if( LL_ADC_IsEnabledIT_JEOS(ADC2))
 	{
-		if(Rflag){	
-			Rflag = 0;
-		}
+
 
 		// Start VBUS Sample ADC
 		LL_ADC_REG_StartConversion(ADC1);
@@ -231,21 +230,27 @@ void ADC1_2_IRQHandler(void)
 		
 		// sample position sensor
 		Encoder_Sample(DT);
-		// SEGGER_RTT_printf(0,"%f\r\n",Encoder.velocity);
 		
 		Foc.adc_vbus = LL_ADC_REG_ReadConversionData12(ADC2);
 		Foc.adc_phase_a = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_1);
 		Foc.adc_phase_b = LL_ADC_INJ_ReadConversionData12(ADC2, LL_ADC_INJ_RANK_1);
 		Foc.i_a = I_SCALE * (float)(Foc.adc_phase_a_offset - Foc.adc_phase_a);
 		Foc.i_b = I_SCALE * (float)(Foc.adc_phase_b_offset - Foc.adc_phase_b);
+		
+//		// low pass filter
+//		float alpha = 0.9;
+//		Foc.i_a = alpha * Foc.i_a_prev + (1 - alpha) * Foc.i_a;
+//		Foc.i_b = alpha * Foc.i_b_prev + (1 - alpha) * Foc.i_b;
+		
 		Foc.i_c = 0 - Foc.i_a - Foc.i_b;
+		
 		Foc.v_bus = 0.9f*Foc.v_bus + 0.1f*Foc.adc_vbus*V_SCALE;		// filter the dc link voltage measurement
 		
 		FSM_loop();
 		
 		LL_ADC_ClearFlag_JEOS(ADC2);  // clear flag ADC group injected end of sequence conversions
 		
-		if(count==10000)
+		if(count==250)
 			count = -1;
 		count ++;
 	}
@@ -255,6 +260,51 @@ void ADC1_2_IRQHandler(void)
   /* USER CODE BEGIN ADC1_2_IRQn 1 */
 
   /* USER CODE END ADC1_2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM3 global interrupt.
+  */
+void TIM3_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM3_IRQn 0 */
+	
+	if(LL_TIM_IsActiveFlag_UPDATE(TIM3) == SET)
+  {
+    LL_TIM_ClearFlag_UPDATE(TIM3);
+		
+		if(Rflag){	
+			Rflag = 0;
+			FSM_input(data);
+		}
+		
+		// 100Hz : tim_cnt = 50
+		if(tim_cnt == 50){
+			tim_cnt = 0;
+			printf("mute %f %f %f %f %f %f %f %f\r\n",Foc.i_a,Foc.i_b,Foc.i_c,Encoder.position, Encoder.velocity, \
+																								Controller.input_pos, Controller.input_torque, Controller.input_vel);		
+		}
+		tim_cnt++;
+		
+		if(Usr.calib_valid==2){
+			printf("phase_resistance = %f\n\r", Usr.phase_resistance);
+			printf("phase_inductance = %f\n\r", Usr.phase_inductance);
+			printf("PI: %f  %f\n\r", Usr.current_ctrl_p_gain, Usr.current_ctrl_i_gain);
+			printf("Pole pairs = %d\n\r", Usr.pole_pairs);
+			printf("Encoder dir rev = %d\n\r", Usr.encoder_dir_rev);
+			printf("Encoder Offset = %d\n\r",  Usr.encoder_offset);
+			Usr.calib_valid = 1;
+		}
+	} 
+
+  /* USER CODE END TIM3_IRQn 0 */
+  /* USER CODE BEGIN TIM3_IRQn 1 */
+	
+	
+	
+
+
+  /* USER CODE END TIM3_IRQn 1 */
 }
 
 /**
@@ -284,8 +334,6 @@ void USART2_IRQHandler(void)
       Rnum ++;
     }
 	}
-	
-	FSM_input(data);
 	
 	WRITE_REG(USART2->RQR, USART_RQR_RXFRQ);
   /* USER CODE END USART2_IRQn 0 */

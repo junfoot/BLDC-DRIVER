@@ -37,3 +37,4 @@ stm\stm32g4xx_it.o: ..\mycode\para.h
 stm\stm32g4xx_it.o: ..\mycode\fsm.h
 stm\stm32g4xx_it.o: ..\mycode\tle.h
 stm\stm32g4xx_it.o: ..\mycode\led.h
+stm\stm32g4xx_it.o: ..\mycode\control.h

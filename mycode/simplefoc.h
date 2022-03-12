@@ -19,6 +19,7 @@ typedef struct sSimple_para{
 } tSimple_para;
 
 
+
 extern tSimple_para simple_para;
 void set_simple_para();
 void set_Uq(tSimple_para *simple_para);

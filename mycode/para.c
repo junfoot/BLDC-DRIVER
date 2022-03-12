@@ -16,7 +16,7 @@ tCoggingMap *pCoggingMap = NULL;
 void set_config(void)
 {
 	Usr.input_mode = INPUT_MODE_PASSTHROUGH;
-	Usr.control_mode = CONTROL_MODE_POSITION_CONTROL;
+	Usr.control_mode = CONTROL_MODE_TORQUE_CONTROL;
 
 // 	typedef enum {
 // 	INPUT_MODE_PASSTHROUGH        = 0,
@@ -36,7 +36,7 @@ void set_config(void)
 	Usr.pole_pairs = 4;
 	Usr.phase_resistance = 0.043198f;
 	Usr.phase_inductance = 0.000007f;
-	Usr.inertia = 0.001f;				// [Nm/(turn/s^2)]
+	Usr.inertia = 0.001f;				// [Nm/(turn/s^2)] 转动惯量吧。。。
 	Usr.torque_constant = 0.06f;		// [Nm/A]
 
 	// Control
@@ -49,7 +49,8 @@ void set_config(void)
 	Usr.vel_gain = 0.15f;
 	Usr.vel_integrator_gain = 0.02f;
 	Usr.vel_limit = 90;
-	Usr.current_limit = 20;
+	Usr.current_limit = 15;
+	Usr.current_ctrl_bandwidth = 1000;
 	
 	Usr.protect_under_voltage = 12;
 	Usr.protect_over_voltage  = 30;
@@ -72,10 +73,22 @@ void set_config(void)
 	Usr.calib_current = 10.0f;
 	Usr.calib_max_voltage = 3.0f;
 	
-	Usr.current_ctrl_bandwidth = 1000;
+	
 	
 	Usr.current_ctrl_p_gain = 3;
 	Usr.current_ctrl_i_gain = 100;
+
+	Usr.vel_error_prev = 0;
+	Usr.vel_integral_prev = 0;
+	Usr.pos_error_prev = 0;
+	Usr.pos_integral_prev = 0;
+
+	Usr.vel_P = 5;
+	Usr.vel_I = 0.1;
+	
+	Usr.pos_P = 100;
+	Usr.pos_I = 2;
+	Usr.pos_D = 1;
 }
 
 
