@@ -130,7 +130,7 @@ void Encoder_Sample(float dt)
 	Encoder.vel_tle = tle_read_speed(dt);
 	
 	// Low pass filter
-	float alpha = 0.99;
+	float alpha = 0;
 	Encoder.velocity = alpha*Encoder.velocity_last + (1 - alpha) * Encoder.velocity;
 	Encoder.vel_tle = alpha*Encoder.vel_tle_last + (1 - alpha) * Encoder.vel_tle;
 	
