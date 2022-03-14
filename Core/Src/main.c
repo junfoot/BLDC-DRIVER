@@ -140,6 +140,14 @@ int main(void)
 		while(1);
 	}
   printf("\n\rDRV8323 init successful!\n\r");
+	
+	if(0 == USR_CONFIG_read_cogging_map()){
+		AnticoggingValid = true;
+		printf("Cogging map loaded\n\r\n\r");
+	}else{
+		USR_CONFIG_set_default_cogging_map();
+		printf("Cogging map loaded faile set to default\n\r\n\r");
+	}
 
   set_config();
 
@@ -156,12 +164,13 @@ int main(void)
     /* USER CODE BEGIN 3 */
 
 	
-//    ANTICOGGING_loop(&Controller);
+		ANTICOGGING_loop(&Controller);
 
 //		if(count == 0){
 //			printf("mute %f %f %f %f %f %f %f %f\r\n",Foc.i_a,Foc.i_b,Foc.i_c,Encoder.position, Encoder.velocity, \
 //																								Controller.input_pos, Controller.input_torque, Controller.input_vel);		
 //		}
+
   }
   /* USER CODE END 3 */
 }

@@ -41,13 +41,15 @@ void set_config(void)
 
 	// Control
 	Usr.torque_ramp_rate = 0.01f;
-	Usr.vel_ramp_rate = 50.0f;
+	Usr.vel_ramp_rate = 5.0f;
 	Usr.input_pos_filter_bandwidth = 10;
-	Usr.gain_scheduling_enable = 0;
+	Usr.gain_scheduling_enable = 1;
 	Usr.gain_scheduling_width = 0.0001f;
+
 	Usr.pos_gain = 260.0f;
 	Usr.vel_gain = 0.15f;
 	Usr.vel_integrator_gain = 0.02f;
+	
 	Usr.vel_limit = 90;
 	Usr.current_limit = 15;
 	Usr.current_ctrl_bandwidth = 1000;
@@ -61,9 +63,9 @@ void set_config(void)
 	Usr.traj_decel = 100;
 	
 	// Anticogging
-	Usr.anticogging_enable = 0;
-	Usr.anticogging_pos_threshold = 0.002f;
-	Usr.anticogging_vel_threshold = 0.01f;
+	Usr.anticogging_enable = 1;
+	Usr.anticogging_pos_threshold = 0.001f;
+	Usr.anticogging_vel_threshold = 0.02f;
 	
 	// Encoder
 	Usr.encoder_dir_rev = 0;
@@ -85,8 +87,9 @@ void set_config(void)
 
 	Usr.vel_P = 5;
 	Usr.vel_I = 0.1;
+	Usr.vel_D = 0.02;
 	
-	Usr.pos_P = 100;
+	Usr.pos_P = 500;
 	Usr.pos_I = 2;
 	Usr.pos_D = 1;
 }

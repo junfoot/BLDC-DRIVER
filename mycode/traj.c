@@ -25,7 +25,7 @@ float sign_hard(float val) {
 }
 
 // Symbol                     Description
-// Ta, Tv and Td              Duration of the stages of the AL profile
+// Ta, Tv and Td              Duration of the stages of the  
 // Xi and Vi                  Adapted initial conditions for the AL profile
 // Xf                         Position set-point
 // s                          Direction (sign) of the trajectory

@@ -31,6 +31,7 @@
 #include "fsm.h"
 #include "led.h"
 #include "control.h"
+#include "anticog.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,6 +53,7 @@
 /* USER CODE BEGIN PV */
 int count = 0;
 int tim_cnt = 0;
+int sample_cnt = 0;
 
 char data[20];
 uint8_t Rflag = 0;
@@ -273,6 +275,8 @@ void TIM3_IRQHandler(void)
   {
     LL_TIM_ClearFlag_UPDATE(TIM3);
 		
+
+		
 		if(Rflag){	
 			Rflag = 0;
 			FSM_input(data);
@@ -294,6 +298,11 @@ void TIM3_IRQHandler(void)
 			printf("Encoder dir rev = %d\n\r", Usr.encoder_dir_rev);
 			printf("Encoder Offset = %d\n\r",  Usr.encoder_offset);
 			Usr.calib_valid = 1;
+		}
+		
+		if(AnticoggingValid && sample_cnt < COGGING_MAP_NUM){
+			printf("sample %f\r\n", pCoggingMap->map[sample_cnt]);
+			sample_cnt++;
 		}
 	} 
 

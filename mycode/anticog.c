@@ -19,6 +19,11 @@ typedef enum eAntiCoggingStep{
 }tAntiCoggingStep;
 
 bool AnticoggingValid = false;
+extern int sample_cnt;
+
+static float current_sum;
+static int cnt;
+int sample_flag;
 
 static tAntiCoggingStep AntiCoggingStep = AS_NULL;
 
@@ -58,8 +63,11 @@ void ANTICOGGING_loop(ControllerStruct *controller)
 	switch(AntiCoggingStep){
 		case AS_START:
 			{
+				sample_flag = 2;
+				current_sum = 0;
+				cnt = 0;
 				float position = Encoder.position;
-				float err = position - (int)position;
+				float err = position - (int)position + 0.1;
 				if(err > 0.001f){
 					controller->input_pos -= 0.001f;
 				}else if(err < -0.001f){
@@ -76,19 +84,31 @@ void ANTICOGGING_loop(ControllerStruct *controller)
 			{
 				float pos_err = controller->input_pos - Encoder.position;
 				if(fabs(pos_err) < Usr.anticogging_pos_threshold && fabs(Encoder.velocity) < Usr.anticogging_vel_threshold){
-					pCoggingMap->map[index] = CONTROLLER_get_integrator_current();
-					SEGGER_RTT_printf(0,"F %d %f\n\r", index, pCoggingMap->map[index]);
+					if(sample_flag == 2)
+						sample_flag = 1;
 					
-					uint8_t data[4];
-					float_to_data(pCoggingMap->map[index], data);
-					
-					controller->input_pos += (1.0f / COGGING_MAP_NUM);
-					index ++;
-					if(index >= COGGING_MAP_NUM){
-						index --;
-						controller->input_pos -= (1.0f / COGGING_MAP_NUM);
-						AntiCoggingStep = AS_BACKWARD_LOOP;
+//					current_sum += CONTROLLER_get_integrator_current();
+//					cnt++;
+					if(sample_flag == 0){
+						cnt = 0;
+						if(controller->input_pos >= 0 && index < COGGING_MAP_NUM){
+							pCoggingMap->map[index] = CONTROLLER_get_integrator_current();
+							printf("F %d %f\n\r", index, CONTROLLER_get_integrator_current());
+							index ++;
+							
+						}
+						erase_current_sample();
+						current_sum = 0;
+						controller->input_pos += (1.0f / COGGING_MAP_NUM);
+						sample_flag = 2;
+						if(controller->input_pos >= 1.1){
+							index --;
+							controller->input_pos -= (1.0f / COGGING_MAP_NUM);
+							AntiCoggingStep = AS_BACKWARD_LOOP;
+						}
 					}
+
+
 				}
 			}
 			break;
@@ -97,17 +117,30 @@ void ANTICOGGING_loop(ControllerStruct *controller)
 			{
 				float pos_err = controller->input_pos - Encoder.position;
 				if(fabs(pos_err) < Usr.anticogging_pos_threshold && fabs(Encoder.velocity) < Usr.anticogging_vel_threshold){
-					pCoggingMap->map[index] += CONTROLLER_get_integrator_current();
-					SEGGER_RTT_printf(0,"B %d %f\n\r", index, pCoggingMap->map[index]);
-				
-					uint8_t data[4];
-					float_to_data(pCoggingMap->map[index], data);
+					if(sample_flag == 2)
+						sample_flag = 1;
 					
-					controller->input_pos -= (1.0f / COGGING_MAP_NUM);
-					index --;
-					if(index < 0){
-						AntiCoggingStep = AS_END;
+//					current_sum += CONTROLLER_get_integrator_current();
+//					cnt++;
+					if(sample_flag == 0){
+						cnt = 0;
+						if(controller->input_pos <= 1 && index >= 0){
+							pCoggingMap->map[index] += CONTROLLER_get_integrator_current();
+							printf("B %d %f\n\r", index, CONTROLLER_get_integrator_current());
+							index --;
+							
+						}											
+						erase_current_sample();
+						current_sum = 0;
+						controller->input_pos -= (1.0f / COGGING_MAP_NUM);
+						
+						sample_flag = 2;
+						if(controller->input_pos <= -0.1){
+							AntiCoggingStep = AS_END;
+						}
 					}
+
+
 				}
 			}
 			break;
@@ -117,7 +150,8 @@ void ANTICOGGING_loop(ControllerStruct *controller)
 				pCoggingMap->map[index] /= 2.0f;
 			}
 			AnticoggingValid = true;
-//			FSM_input(CMD_MENU);
+			sample_cnt = 0;
+			FSM_input("1");
 			AntiCoggingStep = AS_NULL;
 			break;
 		

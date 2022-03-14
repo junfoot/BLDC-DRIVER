@@ -121,8 +121,6 @@ float FOC_current(FOCStruct *foc, float Id_des, float Iq_des, float I_phase, flo
 	float dtc_a, dtc_b, dtc_c;
 	svm(mod_alpha, mod_beta, &dtc_a, &dtc_b, &dtc_c);
 
-    // SEGGER_RTT_printf(0,"%f  %f  %f\r\n",dtc_a, dtc_b, dtc_c);
-
 	// Apply duty
 	TIM1->CCR3 = (uint16_t)(dtc_a * (float)PWM_ARR);
 	TIM1->CCR2 = (uint16_t)(dtc_b * (float)PWM_ARR);

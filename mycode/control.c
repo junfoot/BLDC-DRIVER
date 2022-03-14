@@ -18,10 +18,28 @@ static float input_filter_kp;
 static float input_filter_ki;
 
 static float vel_integrator_torque;
+static float current,error_pos,error;
+static float proportional,integral,derivative;
+
+static int cnt = 0;
+float current_sample = 0;
+extern int sample_flag;
 
 float CONTROLLER_get_integrator_current(void)
 {
-	return vel_integrator_torque;
+	return current_sample;
+}
+void erase_current_sample(void)
+{
+	current_sample = 0;
+}
+
+void CONTROLLER_move_to_pos(float goal_point)
+{
+	if(Usr.input_mode == INPUT_MODE_TRAP_TRAJ && Usr.control_mode == CONTROL_MODE_POSITION_CONTROL){
+		Controller.input_pos = goal_point;
+		input_pos_updated = true;
+	}
 }
 
 static void move_to_pos(float goal_point)
@@ -62,7 +80,7 @@ float current_calculate(ControllerStruct *controller)
             mVelSetPoint = Controller.input_vel;
             mTorqueSetPoint = Controller.input_torque; 
         } break;
-				case INPUT_MODE_TORQUE_RAMP: {
+		case INPUT_MODE_TORQUE_RAMP: {
             float max_step_size = fabs(DT * Usr.torque_ramp_rate);
             float full_step = Controller.input_torque - mTorqueSetPoint;
             float step = CLAMP(full_step, -max_step_size, max_step_size);
@@ -97,7 +115,7 @@ float current_calculate(ControllerStruct *controller)
             
             if (Traj.t > Traj.Tf_) {
                 // Drop into position control mode when done to avoid problems on loop counter delta overflow
-                Usr.control_mode = CONTROL_MODE_POSITION_CONTROL;
+//                Usr.input_mode = INPUT_MODE_PASSTHROUGH;
                 mPosSetPoint = Controller.input_pos;
                 mVelSetPoint = 0.0f;
                 mTorqueSetPoint = 0.0f;
@@ -114,50 +132,64 @@ float current_calculate(ControllerStruct *controller)
         } break;
     }
 
-    float current,error_pos,error;
-		float proportional,integral,derivative;
+
     switch(Usr.control_mode){
-        case CONTROL_MODE_POSITION_CONTROL:
+         case CONTROL_MODE_POSITION_CONTROL:
 
-            error = mPosSetPoint - Encoder.position;
+             error = mPosSetPoint - Encoder.position;
 
-            // u_p  = P *e(k)
-            proportional = Usr.pos_P * error;
-            // u_ik = u_ik_1  + I*Ts/2*(ek + ek_1)
-            integral = Usr.pos_integral_prev + Usr.pos_I * DT * 0.5f * (error + Usr.pos_error_prev);
-            // u_dk = D(ek - ek_1)/Ts
-						derivative = Usr.pos_D * (error - Usr.pos_error_prev)/DT;
-            // sum all the components
-            current = proportional + integral + derivative;
-	
+             // u_p  = P *e(k)
+             proportional = Usr.pos_P * error;
+             // u_ik = u_ik_1  + I*Ts/2*(ek + ek_1)
+             integral = Usr.pos_integral_prev + Usr.pos_I * DT * 0.5f * (error + Usr.pos_error_prev);
+						 // u_dk = D(ek - ek_1)/Ts
+						 derivative = Usr.pos_D * (error - Usr.pos_error_prev)/DT;
+             // sum all the components
+             current = proportional + integral + derivative;
+				 
+            if(sample_flag == 1){
+							current_sample += current;
+							cnt++;
+						}
+						if(cnt == 500){
+							current_sample /= 500.0f;
+							sample_flag = 0;
+							cnt = 0;
+						}
+
             // saving for the next pass
             Usr.pos_integral_prev = integral;
             Usr.pos_error_prev = error;
-
             break;
         case CONTROL_MODE_VELOCITY_CONTROL:
 
-            error = mVelSetPoint - Encoder.velocity;
-            // u_p  = P *e(k)
-            proportional = Usr.vel_P * error;
-            // u_ik = u_ik_1  + I*Ts/2*(ek + ek_1)
-            integral = Usr.vel_integral_prev + Usr.vel_I * DT * 0.5f * (error + Usr.vel_error_prev);
-            // u_dk = D(ek - ek_1)/Ts
-            // sum all the components
-            current = proportional + integral;
+             error = mVelSetPoint - Encoder.velocity;
+             // u_p  = P *e(k)
+             proportional = Usr.vel_P * error;
+             // u_ik = u_ik_1  + I*Ts/2*(ek + ek_1)
+             integral = Usr.vel_integral_prev + Usr.vel_I * DT * 0.5f * (error + Usr.vel_error_prev);
+             // u_dk = D(ek - ek_1)/Ts
+							derivative = Usr.vel_D * (error - Usr.vel_error_prev)/DT;
+             // sum all the components
+             current = proportional + integral + derivative;
 	
-            // saving for the next pass
-            Usr.vel_integral_prev = integral;
-            Usr.vel_error_prev = error;
+             // saving for the next pass
+             Usr.vel_integral_prev = integral;
+             Usr.vel_error_prev = error;
             
 
-            break;
-        case CONTROL_MODE_TORQUE_CONTROL:
-            current = mTorqueSetPoint / Usr.torque_constant;
-            break;
-        default:
-            break;
-    }
+             break;
+         case CONTROL_MODE_TORQUE_CONTROL:
+             current = mTorqueSetPoint / Usr.torque_constant;
+						 break;
+				 default:
+						 break;
+		}
+
+    // Anticogging
+	if(Usr.anticogging_enable && AnticoggingValid){
+		current += pCoggingMap->map[(COGGING_MAP_NUM-1)*Encoder.cnt/ENCODER_CPR];
+	}
 
     // Current limit
     bool limited = false;
@@ -169,6 +201,18 @@ float current_calculate(ControllerStruct *controller)
         limited = true;
         current = -Usr.current_limit;
     }
+
+//    // Velocity integrator (behaviour dependent on limiting)
+//    if (Usr.control_mode < CONTROL_MODE_VELOCITY_CONTROL) {
+//        // reset integral if not in use
+//        vel_integrator_torque = 0.0f;
+//    } else {
+//        if (limited) {
+//            vel_integrator_torque *= 0.99f;
+//        } else {
+//            vel_integrator_torque += ((Usr.vel_integrator_gain * gain_scheduling_multiplier) * DT) * v_err;
+//        }
+//    }
 
     return current;
 }

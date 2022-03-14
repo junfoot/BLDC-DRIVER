@@ -76,6 +76,7 @@ typedef struct sUsrConfig
 	
 	float vel_P;
 	float vel_I;
+	float vel_D;
 	float pos_P;
 	float pos_I;
 	float pos_D;

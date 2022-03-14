@@ -29,5 +29,6 @@ void CONTROLLER_reset(ControllerStruct *controller);
 void CONTROLLER_move_to_pos(float goal_point);
 float CONTROLLER_get_integrator_current(void);
 float current_calculate(ControllerStruct *controller);
+void erase_current_sample(void);
 
 #endif

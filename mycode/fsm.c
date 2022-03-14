@@ -92,6 +92,10 @@ void FSM_input(char *order)
 		Usr.input_mode = INPUT_MODE_TRAP_TRAJ;
 		printf("set input mode to TRAP_TRAJ\r\n");
 	}
+	else if(strcmp(order, "z") == 0){
+		Usr.anticogging_enable = 1 - Usr.anticogging_enable;
+		printf("anticogging %d\r\n",Usr.anticogging_enable);
+	}
 	
 	// input data
 	else{
@@ -106,6 +110,7 @@ void FSM_input(char *order)
 		}
 		else if(strcmp(tmp1, "pin") == 0){
 			Controller.input_pos = temp;
+			CONTROLLER_move_to_pos(temp);
 		}
 		else if(strcmp(tmp1, "posp") == 0){
 			Usr.pos_P = temp;
@@ -121,6 +126,9 @@ void FSM_input(char *order)
 		}
 		else if(strcmp(tmp1, "veli") == 0){
 			Usr.vel_I = temp;
+		}
+		else if(strcmp(tmp1, "veld") == 0){
+			Usr.vel_D = temp;
 		}
 	}
 
@@ -274,6 +282,7 @@ static void exit_state(void)
 			break;
 
 		case FS_ANTICOGGING_MODE:
+			USR_CONFIG_save_cogging_map();
 			FOC_disarm();
 			ANTICOGGING_abort();
 			printf("Anticogging End\r\n");

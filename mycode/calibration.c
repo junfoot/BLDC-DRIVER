@@ -15,6 +15,7 @@
 static tCalibrationStep mCalibStep = CS_NULL;
 static tCalibrationError mCalibError = CE_NULL;
 static int *p_error_arr = NULL;
+extern int sample_cnt;
 
 void CALIBRATION_start(void)
 {
@@ -46,6 +47,7 @@ void CALIBRATION_end(void)
 	
 	if(0 == USR_CONFIG_read_cogging_map()){
 		AnticoggingValid = true;
+		sample_cnt = 0;
 	}else{
 		USR_CONFIG_set_default_cogging_map();
 		AnticoggingValid = false;

@@ -9,6 +9,7 @@
         "istream": "c",
         "type_traits": "c",
         "typeinfo": "c",
-        "PARA.H": "cpp"
+        "PARA.H": "cpp",
+        "control.h": "c"
     }
 }
