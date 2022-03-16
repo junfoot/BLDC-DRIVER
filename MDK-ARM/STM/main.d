@@ -45,3 +45,4 @@ stm\main.o: ..\mycode\fsm.h
 stm\main.o: ..\mycode\control.h
 stm\main.o: ..\mycode\anticog.h
 stm\main.o: ..\mycode\simplefoc.h
+stm\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

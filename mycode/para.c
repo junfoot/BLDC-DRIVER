@@ -87,7 +87,7 @@ void set_config(void)
 
 	Usr.vel_P = 5;
 	Usr.vel_I = 0.1;
-	Usr.vel_D = 0.02;
+	Usr.vel_D = 0;
 	
 	Usr.pos_P = 500;
 	Usr.pos_I = 2;

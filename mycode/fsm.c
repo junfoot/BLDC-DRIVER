@@ -96,6 +96,10 @@ void FSM_input(char *order)
 		Usr.anticogging_enable = 1 - Usr.anticogging_enable;
 		printf("anticogging %d\r\n",Usr.anticogging_enable);
 	}
+	else if(strcmp(order, "n") == 0){
+		LL_GPIO_TogglePin(GPIOA, LL_GPIO_PIN_1);
+		printf("disspation\r\n");
+	}
 	
 	// input data
 	else{

@@ -39,6 +39,7 @@
 #include "anticog.h"
 #include <stdio.h>
 #include "simplefoc.h"
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -134,6 +135,11 @@ int main(void)
 
 		
 	LL_TIM_EnableCounter(TIM1);
+	
+	uint16_t cal1, cal2;
+	Foc.cal1 = *((volatile uint16_t *) (0x1FFF75A8));
+	Foc.cal2 = *((volatile uint16_t *) (0x1FFF75CA));
+	printf("%X %x\r\n",Foc.cal1,Foc.cal2);
 
   if(DRV8323_init() != 0){
 		printf("\n\rDRV8323 init fail!\n\r");
@@ -162,7 +168,14 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
+		
+		if(FSM_get_stat() != FS_ANTICOGGING_MODE){
+			float Vtemp = Foc.adc_temp * 3.3 / 4096;
+			float R = (3.3 - Vtemp) * 10000.0 / Vtemp;
+			Foc.temp = 1.0f / (1.0f/3435 * log(R/10000.0) + 1.0f/(273.15+25)) - 273.15;
+			Foc.intemp = (130.0 - 30.0) / (Foc.cal2 - Foc.cal1) * (Foc.adc_intemp * 1.1 - Foc.cal1) + 30;
+//		Foc.intemp = (1.43 - (Foc.adc_intemp * 3.3 / 4096)) / 0.0043 + 25;
+		}
 	
 		ANTICOGGING_loop(&Controller);
 

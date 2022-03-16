@@ -39,3 +39,4 @@ stm\stm32g4xx_it.o: ..\mycode\tle.h
 stm\stm32g4xx_it.o: ..\mycode\led.h
 stm\stm32g4xx_it.o: ..\mycode\control.h
 stm\stm32g4xx_it.o: ..\mycode\anticog.h
+stm\stm32g4xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

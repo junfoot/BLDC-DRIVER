@@ -32,6 +32,7 @@
 #include "led.h"
 #include "control.h"
 #include "anticog.h"
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -225,7 +226,6 @@ void ADC1_2_IRQHandler(void)
 	if( LL_ADC_IsEnabledIT_JEOS(ADC2))
 	{
 
-
 		// Start VBUS Sample ADC
 		LL_ADC_REG_StartConversion(ADC1);
 		LL_ADC_REG_StartConversion(ADC2);
@@ -233,8 +233,11 @@ void ADC1_2_IRQHandler(void)
 		// sample position sensor
 		Encoder_Sample(DT);
 		
+		Foc.adc_intemp = LL_ADC_REG_ReadConversionData12(ADC1);
 		Foc.adc_vbus = LL_ADC_REG_ReadConversionData12(ADC2);
 		Foc.adc_phase_a = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_1);
+		Foc.adc_temp = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
+		Foc.adc_aux = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
 		Foc.adc_phase_b = LL_ADC_INJ_ReadConversionData12(ADC2, LL_ADC_INJ_RANK_1);
 		Foc.i_a = I_SCALE * (float)(Foc.adc_phase_a_offset - Foc.adc_phase_a);
 		Foc.i_b = I_SCALE * (float)(Foc.adc_phase_b_offset - Foc.adc_phase_b);
@@ -247,6 +250,8 @@ void ADC1_2_IRQHandler(void)
 		Foc.i_c = 0 - Foc.i_a - Foc.i_b;
 		
 		Foc.v_bus = 0.9f*Foc.v_bus + 0.1f*Foc.adc_vbus*V_SCALE;		// filter the dc link voltage measurement
+		
+		Foc.aux_current = Foc.adc_aux * 3.3 / 4096;
 		
 		FSM_loop();
 		
@@ -285,8 +290,9 @@ void TIM3_IRQHandler(void)
 		// 100Hz : tim_cnt = 50
 		if(tim_cnt == 50){
 			tim_cnt = 0;
-			printf("mute %f %f %f %f %f %f %f %f\r\n",Foc.i_a,Foc.i_b,Foc.i_c,Encoder.position, Encoder.velocity, \
-																								Controller.input_pos, Controller.input_torque, Controller.input_vel);		
+			printf("mute %f %f %f %f %f %f %f %f %f %f %f\r\n",Foc.i_a,Foc.i_b,Foc.i_c,Encoder.position, Encoder.velocity, \
+																								Controller.input_pos, Controller.input_torque, Controller.input_vel, \
+																								Foc.intemp, Foc.temp, Foc.aux_current);	
 		}
 		tim_cnt++;
 		
@@ -300,10 +306,10 @@ void TIM3_IRQHandler(void)
 			Usr.calib_valid = 1;
 		}
 		
-		if(AnticoggingValid && sample_cnt < COGGING_MAP_NUM){
-			printf("sample %f\r\n", pCoggingMap->map[sample_cnt]);
-			sample_cnt++;
-		}
+//		if(AnticoggingValid && sample_cnt < COGGING_MAP_NUM){
+//			printf("sample %f\r\n", pCoggingMap->map[sample_cnt]);
+//			sample_cnt++;
+//		}
 	} 
 
   /* USER CODE END TIM3_IRQn 0 */
