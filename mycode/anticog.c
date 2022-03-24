@@ -150,7 +150,7 @@ void ANTICOGGING_loop(ControllerStruct *controller)
 				pCoggingMap->map[index] /= 2.0f;
 			}
 			AnticoggingValid = true;
-			sample_cnt = 0;
+//			sample_cnt = 0;
 			FSM_input("1");
 			AntiCoggingStep = AS_NULL;
 			break;

@@ -3,11 +3,11 @@
 <title>Static Call Graph - [STM\STM.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image STM\STM.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Mar 16 18:44:30 2022
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Mar 24 15:40:48 2022
 <BR><P>
-<H3>Maximum Stack Usage =        424 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        416 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-TIM3_IRQHandler &rArr; FSM_input &rArr; __0sscanf &rArr; __vfscanf_char &rArr; __vfscanf &rArr; _scanf_real
+ADC1_2_IRQHandler &rArr; FSM_loop &rArr; CALIBRATION_loop &rArr; FSM_input &rArr; __0sscanf &rArr; __vfscanf_char &rArr; __vfscanf &rArr; _scanf_real
 <P>
 <H3>
 Mutually Recursive functions
@@ -734,7 +734,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit_state
 </UL>
 
-<P><STRONG><a name="[85]"></a>ANTICOGGING_loop</STRONG> (Thumb, 630 bytes, Stack size 32 bytes, anticog.o(i.ANTICOGGING_loop))
+<P><STRONG><a name="[85]"></a>ANTICOGGING_loop</STRONG> (Thumb, 628 bytes, Stack size 32 bytes, anticog.o(i.ANTICOGGING_loop))
 <BR><BR>[Stack]<UL><LI>Max Depth = 336<LI>Call Chain = ANTICOGGING_loop &rArr; FSM_input &rArr; __0sscanf &rArr; __vfscanf_char &rArr; __vfscanf &rArr; _scanf_real
 </UL>
 <BR>[Calls]<UL><LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
@@ -765,7 +765,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g431xx.o(RESET)
 </UL>
-<P><STRONG><a name="[8f]"></a>CALIBRATION_end</STRONG> (Thumb, 42 bytes, Stack size 16 bytes, calibration.o(i.CALIBRATION_end))
+<P><STRONG><a name="[8f]"></a>CALIBRATION_end</STRONG> (Thumb, 38 bytes, Stack size 16 bytes, calibration.o(i.CALIBRATION_end))
 <BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = CALIBRATION_end &rArr; USR_CONFIG_read_cogging_map &rArr; HEAP_malloc &rArr; prvInsertBlockIntoFreeList
 </UL>
 <BR>[Calls]<UL><LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USR_CONFIG_set_default_cogging_map
@@ -1057,10 +1057,11 @@ Global Symbols
 
 <P><STRONG><a name="[c4]"></a>FSM_get_stat</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, fsm.o(i.FSM_get_stat))
 <BR><BR>[Called By]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_loop
+<LI><a href="#[27]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM3_IRQHandler
 <LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[88]"></a>FSM_input</STRONG> (Thumb, 704 bytes, Stack size 40 bytes, fsm.o(i.FSM_input))
+<P><STRONG><a name="[88]"></a>FSM_input</STRONG> (Thumb, 686 bytes, Stack size 40 bytes, fsm.o(i.FSM_input))
 <BR><BR>[Stack]<UL><LI>Max Depth = 304<LI>Call Chain = FSM_input &rArr; __0sscanf &rArr; __vfscanf_char &rArr; __vfscanf &rArr; _scanf_real
 </UL>
 <BR>[Calls]<UL><LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CONTROLLER_move_to_pos
@@ -1433,11 +1434,12 @@ Global Symbols
 <P><STRONG><a name="[52]"></a>SystemInit</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, system_stm32g4xx.o(i.SystemInit))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g431xx.o(.text)
 </UL>
-<P><STRONG><a name="[27]"></a>TIM3_IRQHandler</STRONG> (Thumb, 354 bytes, Stack size 120 bytes, stm32g4xx_it.o(i.TIM3_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 424<LI>Call Chain = TIM3_IRQHandler &rArr; FSM_input &rArr; __0sscanf &rArr; __vfscanf_char &rArr; __vfscanf &rArr; _scanf_real
+<P><STRONG><a name="[27]"></a>TIM3_IRQHandler</STRONG> (Thumb, 478 bytes, Stack size 96 bytes, stm32g4xx_it.o(i.TIM3_IRQHandler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 400<LI>Call Chain = TIM3_IRQHandler &rArr; FSM_input &rArr; __0sscanf &rArr; __vfscanf_char &rArr; __vfscanf &rArr; _scanf_real
 </UL>
 <BR>[Calls]<UL><LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FSM_input
+<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FSM_get_stat
 <LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32g431xx.o(RESET)
@@ -1518,8 +1520,6 @@ Global Symbols
 <LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANTICOGGING_loop
 <LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CALIBRATION_loop
-<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit_state
-<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enter_state
 </UL>
 
 <P><STRONG><a name="[133]"></a>__c89printf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0printf), UNUSED)
@@ -1719,7 +1719,7 @@ Global Symbols
 <LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FOC_current
 </UL>
 
-<P><STRONG><a name="[51]"></a>main</STRONG> (Thumb, 566 bytes, Stack size 24 bytes, main.o(i.main))
+<P><STRONG><a name="[51]"></a>main</STRONG> (Thumb, 554 bytes, Stack size 24 bytes, main.o(i.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 360<LI>Call Chain = main &rArr; ANTICOGGING_loop &rArr; FSM_input &rArr; __0sscanf &rArr; __vfscanf_char &rArr; __vfscanf &rArr; _scanf_real
 </UL>
 <BR>[Calls]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;set_config
@@ -1957,7 +1957,7 @@ Local Symbols
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRV8323_read_reg
 </UL>
 
-<P><STRONG><a name="[be]"></a>enter_state</STRONG> (Thumb, 120 bytes, Stack size 8 bytes, fsm.o(i.enter_state))
+<P><STRONG><a name="[be]"></a>enter_state</STRONG> (Thumb, 80 bytes, Stack size 8 bytes, fsm.o(i.enter_state))
 <BR><BR>[Stack]<UL><LI>Max Depth = 60<LI>Call Chain = enter_state &rArr; CALIBRATION_start &rArr; HEAP_malloc &rArr; prvInsertBlockIntoFreeList
 </UL>
 <BR>[Calls]<UL><LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;set_simple_para
@@ -1966,19 +1966,17 @@ Local Symbols
 <LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANTICOGGING_start
 <LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FOC_reset
 <LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FOC_arm
-<LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FSM_loop
 </UL>
 
-<P><STRONG><a name="[bd]"></a>exit_state</STRONG> (Thumb, 76 bytes, Stack size 16 bytes, fsm.o(i.exit_state))
+<P><STRONG><a name="[bd]"></a>exit_state</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, fsm.o(i.exit_state))
 <BR><BR>[Stack]<UL><LI>Max Depth = 84<LI>Call Chain = exit_state &rArr; CALIBRATION_end &rArr; USR_CONFIG_read_cogging_map &rArr; HEAP_malloc &rArr; prvInsertBlockIntoFreeList
 </UL>
 <BR>[Calls]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FOC_disarm
 <LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USR_CONFIG_save_cogging_map
 <LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CALIBRATION_end
 <LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ANTICOGGING_abort
-<LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FSM_loop
 </UL>

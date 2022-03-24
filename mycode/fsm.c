@@ -30,6 +30,7 @@ float vq;
 
 char tmp1[10], tmp2[10];
 float temp;
+uint8_t printwhat;
 
 void FSM_input(char *order)
 {
@@ -62,35 +63,27 @@ void FSM_input(char *order)
 	}
 	else if(strcmp(order, "p") == 0){
 			Usr.control_mode = CONTROL_MODE_POSITION_CONTROL;
-			printf("set control mode to POSITION\r\n");
 	}
 	else if(strcmp(order, "v") == 0){
 			Usr.control_mode = CONTROL_MODE_VELOCITY_CONTROL;
-			printf("set control mode to VELOCITY\r\n");
 	}
 	else if(strcmp(order, "t") == 0){
 			Usr.control_mode = CONTROL_MODE_TORQUE_CONTROL;
-			printf("set control mode to TORQUE\r\n");
 	}
 	else if(strcmp(order, "a") == 0){
 		Usr.input_mode = INPUT_MODE_PASSTHROUGH;
-		printf("set input mode to PASSTHROUGH\r\n");
 	}
 	else if(strcmp(order, "s") == 0){
 		Usr.input_mode = INPUT_MODE_TORQUE_RAMP;
-		printf("set input mode to TORQUE_RAMP\r\n");
 	}
 	else if(strcmp(order, "d") == 0){
 		Usr.input_mode = INPUT_MODE_VEL_RAMP;
-		printf("set input mode to VEL_RAMP\r\n");
 	}
 	else if(strcmp(order, "f") == 0){
 		Usr.input_mode = INPUT_MODE_POS_FILTER;
-		printf("set input mode to POS_FILTER\r\n");
 	}
 	else if(strcmp(order, "g") == 0){
 		Usr.input_mode = INPUT_MODE_TRAP_TRAJ;
-		printf("set input mode to TRAP_TRAJ\r\n");
 	}
 	else if(strcmp(order, "z") == 0){
 		Usr.anticogging_enable = 1 - Usr.anticogging_enable;
@@ -229,23 +222,19 @@ static void enter_state(void)
 {
 	switch(Fsm.state){
 		case FS_MENU_MODE:
-			printf("Enter MENU Mode\r\n");
 			break;
 		
 		case FS_MOTOR_MODE:
-			printf("Enter Motor Mode\r\n");
 			CONTROLLER_reset(&Controller);
 			FOC_reset(&Foc);
 			FOC_arm();
 			break;
 		
 		case FS_CALIBRATION_MODE:
-			printf("Calibration Start\r\n");
 			CALIBRATION_start();
 			break;
 
 		case FS_ANTICOGGING_MODE:
-			printf("Anticogging Start\r\n");
 			CONTROLLER_reset(&Controller);
 			FOC_reset(&Foc);
 			FOC_arm();
@@ -256,7 +245,6 @@ static void enter_state(void)
 			set_simple_para();
 			FOC_reset(&Foc);
 			FOC_arm();
-			printf("Enter SimpleFOC Mode\r\n");
 			break;
 
 		default:
@@ -268,20 +256,17 @@ static void exit_state(void)
 {
 	switch(Fsm.state){
 		case FS_MENU_MODE:
-			printf("Exit MENU\n\r");
 			Fsm.ready = 1;
 			break;
 
 		case FS_MOTOR_MODE:
 			FOC_disarm();
-			printf("Exit motor mode\r\n");
 			Fsm.ready = 1;
 			break;
 
 		case FS_CALIBRATION_MODE:
 			FOC_disarm();
 			CALIBRATION_end();
-			printf("Calibration End\r\n");
 			Fsm.ready = 1;
 			break;
 
@@ -289,13 +274,11 @@ static void exit_state(void)
 			USR_CONFIG_save_cogging_map();
 			FOC_disarm();
 			ANTICOGGING_abort();
-			printf("Anticogging End\r\n");
 			Fsm.ready = 1;
 			break;	
 		
 		case FS_SIMPLE_MODE:
 			FOC_disarm();
-			printf("Exit SimpleFOC mode\r\n");
 			Fsm.ready = 1;
 			break;
 

@@ -139,7 +139,6 @@ int main(void)
 	uint16_t cal1, cal2;
 	Foc.cal1 = *((volatile uint16_t *) (0x1FFF75A8));
 	Foc.cal2 = *((volatile uint16_t *) (0x1FFF75CA));
-	printf("%X %x\r\n",Foc.cal1,Foc.cal2);
 
   if(DRV8323_init() != 0){
 		printf("\n\rDRV8323 init fail!\n\r");

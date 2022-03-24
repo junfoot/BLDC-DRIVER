@@ -47,7 +47,7 @@ void CALIBRATION_end(void)
 	
 	if(0 == USR_CONFIG_read_cogging_map()){
 		AnticoggingValid = true;
-		sample_cnt = 0;
+//		sample_cnt = 0;
 	}else{
 		USR_CONFIG_set_default_cogging_map();
 		AnticoggingValid = false;

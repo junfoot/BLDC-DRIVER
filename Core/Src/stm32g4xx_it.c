@@ -275,41 +275,53 @@ void ADC1_2_IRQHandler(void)
 void TIM3_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM3_IRQn 0 */
+	static uint8_t incnt = 0;
 	
 	if(LL_TIM_IsActiveFlag_UPDATE(TIM3) == SET)
   {
     LL_TIM_ClearFlag_UPDATE(TIM3);
-		
-
 		
 		if(Rflag){	
 			Rflag = 0;
 			FSM_input(data);
 		}
 		
-		// 100Hz : tim_cnt = 50
-		if(tim_cnt == 50){
+		// 50Hz : tim_cnt = 100
+		if(tim_cnt == 100){
 			tim_cnt = 0;
-			printf("mute %f %f %f %f %f %f %f %f %f %f %f\r\n",Foc.i_a,Foc.i_b,Foc.i_c,Encoder.position, Encoder.velocity, \
-																								Controller.input_pos, Controller.input_torque, Controller.input_vel, \
-																								Foc.intemp, Foc.temp, Foc.aux_current);	
+	
+			if(Usr.calib_valid==2){
+				printf("phase_resistance = %f\n\r", Usr.phase_resistance);
+				printf("phase_inductance = %f\n\r", Usr.phase_inductance);
+				printf("PI: %f  %f\n\r", Usr.current_ctrl_p_gain, Usr.current_ctrl_i_gain);
+				printf("Pole pairs = %d\n\r", Usr.pole_pairs);
+				printf("Encoder dir rev = %d\n\r", Usr.encoder_dir_rev);
+				printf("Encoder Offset = %d\n\r",  Usr.encoder_offset);
+				Usr.calib_valid = 1;
+			}
+			else{
+				if(incnt == 20){
+					incnt = 0;
+					printf("q %d %d %d %f %f %f\r\n", FSM_get_stat(), Usr.input_mode, Usr.control_mode, \
+																		Controller.input_pos, Controller.input_vel, Controller.input_torque);
+				}
+				else{
+					printf("m %f %f %f %f %f %f %f %f\r\n",Foc.i_a,Foc.i_b,Foc.i_c,Encoder.position, Encoder.velocity, \
+																													Foc.intemp, Foc.temp, Foc.aux_current);	
+				}
+				incnt++;
+				
+				
+			}
+			
+			// anticogging有关
+			if(AnticoggingValid && sample_cnt < COGGING_MAP_NUM){
+				printf("s %f\r\n", pCoggingMap->map[sample_cnt]);
+				sample_cnt++;
+			}
+				
 		}
 		tim_cnt++;
-		
-		if(Usr.calib_valid==2){
-			printf("phase_resistance = %f\n\r", Usr.phase_resistance);
-			printf("phase_inductance = %f\n\r", Usr.phase_inductance);
-			printf("PI: %f  %f\n\r", Usr.current_ctrl_p_gain, Usr.current_ctrl_i_gain);
-			printf("Pole pairs = %d\n\r", Usr.pole_pairs);
-			printf("Encoder dir rev = %d\n\r", Usr.encoder_dir_rev);
-			printf("Encoder Offset = %d\n\r",  Usr.encoder_offset);
-			Usr.calib_valid = 1;
-		}
-		
-//		if(AnticoggingValid && sample_cnt < COGGING_MAP_NUM){
-//			printf("sample %f\r\n", pCoggingMap->map[sample_cnt]);
-//			sample_cnt++;
-//		}
 	} 
 
   /* USER CODE END TIM3_IRQn 0 */

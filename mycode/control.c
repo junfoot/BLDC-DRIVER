@@ -8,7 +8,7 @@
 
 ControllerStruct Controller;
 
-static volatile bool input_pos_updated = false;
+static bool input_pos_updated = false;
 
 static float mPosSetPoint;
 static float mVelSetPoint;

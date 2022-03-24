@@ -27,12 +27,29 @@ Project File Date:  03/16/2022
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'STM'
-compiling para.c...
-compiling tle.c...
+compiling control.c...
+..\mycode\control.c(195): warning:  #550-D: variable "limited"  was set but never used
+      bool limited = false;
+..\mycode\control.c(20): warning:  #550-D: variable "vel_integrator_torque"  was set but never used
+  static float vel_integrator_torque;
+..\mycode\control.c(21): warning:  #177-D: variable "error_pos"  was declared but never referenced
+  static float current,error_pos,error;
+..\mycode\control.c: 3 warnings, 0 errors
+compiling calibration.c...
+compiling anticog.c...
+..\mycode\anticog.c(70): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  				float err = position - (int)position + 0.1;
+..\mycode\anticog.c(104): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  						if(controller->input_pos >= 1.1){
+..\mycode\anticog.c(24): warning:  #550-D: variable "current_sum"  was set but never used
+  static float current_sum;
+..\mycode\anticog.c(25): warning:  #550-D: variable "cnt"  was set but never used
+  static int cnt;
+..\mycode\anticog.c: 4 warnings, 0 errors
 linking...
-Program Size: Code=28032 RO-data=3800 RW-data=328 ZI-data=14160  
+Program Size: Code=27612 RO-data=3804 RW-data=328 ZI-data=14160  
 FromELF: creating hex file...
-"STM\STM.axf" - 0 Error(s), 0 Warning(s).
+"STM\STM.axf" - 0 Error(s), 7 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -61,41 +78,41 @@ Package Vendor: Keil
       Include file:  CMSIS\Core\Include\tz_context.h
 
    * Component: ARM::CMSIS:DSP:Source:1.9.0-dev
-      Include file:  CMSIS\DSP\Include\arm_math.h
-      Include file:  CMSIS\DSP\Include\arm_math_f16.h
       Include file:  CMSIS\DSP\Include\arm_common_tables.h
-      Include file:  CMSIS\DSP\Include\arm_common_tables_f16.h
+      Include file:  CMSIS\DSP\Include\arm_math_f16.h
       Include file:  CMSIS\DSP\Include\arm_const_structs.h
-      Include file:  CMSIS\DSP\Include\arm_const_structs_f16.h
       Source file:   CMSIS\DSP\Source\BasicMathFunctions\BasicMathFunctions.c
-      Source file:   CMSIS\DSP\Source\QuaternionMathFunctions\QuaternionMathFunctions.c
-      Source file:   CMSIS\DSP\Source\InterpolationFunctions\InterpolationFunctionsF16.c
-      Source file:   CMSIS\DSP\Source\BayesFunctions\BayesFunctions.c
-      Source file:   CMSIS\DSP\Source\FastMathFunctions\FastMathFunctions.c
-      Source file:   CMSIS\DSP\Source\InterpolationFunctions\InterpolationFunctions.c
-      Source file:   CMSIS\DSP\Source\SupportFunctions\SupportFunctions.c
-      Source file:   CMSIS\DSP\Source\BayesFunctions\BayesFunctionsF16.c
-      Source file:   CMSIS\DSP\Source\TransformFunctions\TransformFunctions.c
-      Source file:   CMSIS\DSP\Source\ComplexMathFunctions\ComplexMathFunctionsF16.c
-      Source file:   CMSIS\DSP\Source\MatrixFunctions\MatrixFunctions.c
-      Source file:   CMSIS\DSP\Source\SVMFunctions\SVMFunctionsF16.c
-      Source file:   CMSIS\DSP\Source\BasicMathFunctions\BasicMathFunctionsF16.c
-      Source file:   CMSIS\DSP\Source\ControllerFunctions\ControllerFunctions.c
-      Source file:   CMSIS\DSP\Source\DistanceFunctions\DistanceFunctions.c
-      Source file:   CMSIS\DSP\Source\SVMFunctions\SVMFunctions.c
-      Source file:   CMSIS\DSP\Source\TransformFunctions\TransformFunctionsF16.c
+      Include file:  CMSIS\DSP\Include\arm_common_tables_f16.h
+      Include file:  CMSIS\DSP\Include\arm_math.h
+      Include file:  CMSIS\DSP\Include\arm_const_structs_f16.h
       Source file:   CMSIS\DSP\Source\CommonTables\CommonTables.c
-      Source file:   CMSIS\DSP\Source\StatisticsFunctions\StatisticsFunctionsF16.c
-      Source file:   CMSIS\DSP\Source\MatrixFunctions\MatrixFunctionsF16.c
-      Source file:   CMSIS\DSP\Source\CommonTables\CommonTablesF16.c
-      Source file:   CMSIS\DSP\Source\ComplexMathFunctions\ComplexMathFunctions.c
-      Source file:   CMSIS\DSP\Source\FilteringFunctions\FilteringFunctions.c
+      Source file:   CMSIS\DSP\Source\BayesFunctions\BayesFunctions.c
+      Source file:   CMSIS\DSP\Source\QuaternionMathFunctions\QuaternionMathFunctions.c
+      Source file:   CMSIS\DSP\Source\SVMFunctions\SVMFunctions.c
       Source file:   CMSIS\DSP\Source\SupportFunctions\SupportFunctionsF16.c
+      Source file:   CMSIS\DSP\Source\SVMFunctions\SVMFunctionsF16.c
+      Source file:   CMSIS\DSP\Source\ControllerFunctions\ControllerFunctions.c
+      Source file:   CMSIS\DSP\Source\MatrixFunctions\MatrixFunctionsF16.c
+      Source file:   CMSIS\DSP\Source\StatisticsFunctions\StatisticsFunctionsF16.c
+      Source file:   CMSIS\DSP\Source\InterpolationFunctions\InterpolationFunctions.c
+      Source file:   CMSIS\DSP\Source\FilteringFunctions\FilteringFunctions.c
+      Source file:   CMSIS\DSP\Source\ComplexMathFunctions\ComplexMathFunctions.c
+      Source file:   CMSIS\DSP\Source\MatrixFunctions\MatrixFunctions.c
+      Source file:   CMSIS\DSP\Source\FastMathFunctions\FastMathFunctions.c
+      Source file:   CMSIS\DSP\Source\TransformFunctions\TransformFunctionsF16.c
+      Source file:   CMSIS\DSP\Source\TransformFunctions\TransformFunctions.c
       Source file:   CMSIS\DSP\Source\FastMathFunctions\FastMathFunctionsF16.c
+      Source file:   CMSIS\DSP\Source\ComplexMathFunctions\ComplexMathFunctionsF16.c
       Source file:   CMSIS\DSP\Source\DistanceFunctions\DistanceFunctionsF16.c
-      Source file:   CMSIS\DSP\Source\StatisticsFunctions\StatisticsFunctions.c
+      Source file:   CMSIS\DSP\Source\BayesFunctions\BayesFunctionsF16.c
       Source file:   CMSIS\DSP\Source\FilteringFunctions\FilteringFunctionsF16.c
-Build Time Elapsed:  00:00:06
+      Source file:   CMSIS\DSP\Source\CommonTables\CommonTablesF16.c
+      Source file:   CMSIS\DSP\Source\DistanceFunctions\DistanceFunctions.c
+      Source file:   CMSIS\DSP\Source\StatisticsFunctions\StatisticsFunctions.c
+      Source file:   CMSIS\DSP\Source\SupportFunctions\SupportFunctions.c
+      Source file:   CMSIS\DSP\Source\InterpolationFunctions\InterpolationFunctionsF16.c
+      Source file:   CMSIS\DSP\Source\BasicMathFunctions\BasicMathFunctionsF16.c
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>
